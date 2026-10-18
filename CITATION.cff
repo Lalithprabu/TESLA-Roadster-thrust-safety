@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "Roadster Thrust System: System, Safety and Security Concept (RTS-SSC-001)"
+message: "If you use this study, please cite it as below."
+type: report
+authors:
+  - name: "Lalith Prabu"
+version: "3.0"
+date-released: "2026-10-18"
+license: CC-BY-4.0
+keywords: [ISO 26262, ISO 21448, ISO/SAE 21434, functional safety, SOTIF, cybersecurity, FMEA, FMEDA, TARA]

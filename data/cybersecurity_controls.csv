@@ -1,0 +1,14 @@
+id,control,cyber_goal,verification
+CC-01,"Zonal gateway with allowlist: only mode request, zone data and crash signal reach the thrust domain","CG1, CG6",VER-03
+CC-02,"Private thrust bus with message authentication, counters and timeouts","CG1, CG5",VER-21
+CC-03,Diagnostic access needs an authenticated service tool and empty tanks,CG1,VER-21
+CC-04,Signed challenge-response track beacon with distance bounding,CG2,VER-25
+CC-05,Positioning plausibility: satellite fix checked against wheel odometry and inertial data,CG2,VER-25
+CC-06,Secure boot with a hardware root of trust in both thrust computers,CG3,VER-21
+CC-07,Tamper detection forces Road-safe mode and logs the event,CG3,VER-21
+CC-08,"Signed update packages, anti-rollback; thrust-domain updates only with tanks empty and the car present",CG3,VER-21
+CC-09,Authenticated fill coupling; independent mechanical pressure relief,CG4,VER-18
+CC-10,Communication loss in flight triggers the backup hop law (TSR-22),CG5,VER-23
+CC-11,"Log encryption, data minimisation and retention limits",CG6,VER-21
+CC-12,Domain segmentation: infotainment compromise cannot reach chassis or thrust,CG6,VER-03
+CC-13,Safety monitor confirms the zone independently by inertial dead-reckoning from the last trusted beacon fix,CG2,VER-25

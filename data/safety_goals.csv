@@ -1,0 +1,9 @@
+id,safety_goal,asil,safe_state,ftti
+SG1,Prevent thrust unless armed in an authorised zone with a valid driver command,D,Master valves closed (Road-safe),Preventive
+SG2,Prevent COPV rupture or uncontrolled venting from harming anyone,D,Vessels isolated; thrust-neutral venting,Seconds (fill over-pressure)
+SG3,Maintain steering control,D,"Redundant steer-by-wire, degraded mode",Per steering item
+SG4,Prevent a loss of downforce greater than the chassis can handle,C,"Speed and cornering limits, warning",About 150 ms (estimate)
+SG5,Prevent asymmetric thrust during a launch,C,Cut thrust (safe on the ground),About 100 ms (estimate)
+SG6,Ensure any started manoeuvre can be finished and landed upright after one fault,B + FHA target 1e-7 per hop,"Level the car, land, then cut",200 ms (Sim 3)
+SG7,Prevent jet blast or the car striking a person,B,Refuse to arm,Preventive
+SG8,Prevent external airbag deployment outside Hop mode,B,Airbags disarmed,Preventive

@@ -1,0 +1,12 @@
+id,hazardous_event,situation,S,E,C,asil,safety_goal
+HE1,Unintended thruster firing,Driving on a public road,S3,E4,C3,D,SG1
+HE2,Unintended thruster firing,Parking or low speed near people,S3,E4,C2,C,SG1
+HE3,COPV rupture or uncontrolled venting,Any driving or parking,S3,E4,C3,D,SG2
+HE4,Loss of steering,Any driving (steer-by-wire),S3,E4,C3,D,SG3
+HE5,Sudden loss of suction at high cornering load,"Track mode, near 2G",S3,E3,C3,C,SG4
+HE6,Asymmetric thrust during launch,"Boost, 3-4.6 g straight-line launch",S3,E3,C3,C,SG5
+HE7,"Loss of thrust mid-manoeuvre (gas used up, leak, icing, valve closure)",Hop,S3,E2,C3,B,SG6
+HE8,"Stuck-open, stuck-closed or wrong-direction thruster",Hop,S3,E2,C3,B,SG6
+HE9,Jet blast or car strikes a bystander,Hop or Boost with a person in the area,S3,E2,C3,B,SG7
+HE10,Unintended external airbag deployment,Highway driving,S2,E4,C2,B,SG8
+HE11,Loss of suction while inverted,Inverted-ramp stunt,S3,E1,C3,A,SG6

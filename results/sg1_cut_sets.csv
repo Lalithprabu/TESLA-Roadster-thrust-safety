@@ -1,0 +1,9 @@
+cut_set,order,FIT
+ccf_computers,1,0.006
+ccf_masters + tv_open,2,6.74e-05
+mon_wrong + tcu_wrong,2,2.4e-07
+tv_open + vA_open + vB_open,3,1.25e-08
+harnA + tv_open + vB_open,3,3.65e-09
+harnB + tv_open + vA_open,3,3.65e-09
+hssA + tv_open + vB_open,3,1.86e-09
+hssB + tv_open + vA_open,3,1.86e-09

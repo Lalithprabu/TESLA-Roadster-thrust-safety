@@ -1,0 +1,17 @@
+id,parameter,value,basis,replace_with
+A-01,Vehicle mass,"1,850 kg","'4,000+ lb' quoted at the reveal (TechCrunch)",Weighbridge data
+A-02,Roll inertia,600 kg m2,Typical low sports car,Inertia rig measurement
+A-03,Gas storage volume,600 L,Disclosed by Tesla (L. Moravy),-
+A-04,Gas mass,250 kg reported; 244 kg modelled,"InsideEVs, single source",Tesla specification
+A-05,Fill pressure,400 bar,Derived: 250 kg in 600 L at 20 C with Z = 1.17,COPV rating
+A-06,Thruster count and layout,10 nozzles; four lift groups of 9 kN at +/-0.35 and +/-0.85 m,Count disclosed; layout assumed,Nozzle layout and thrust-stand data
+A-07,Thrust coefficient,1.35,Typical cold-gas nozzle with losses,Thrust stand
+A-08,Regulation,40 bar feed; full thrust lost below 50 bar tank,Assumed,Regulator characterisation
+A-09,Number of COPVs,6 vessels in 3 groups,'Every usable void' implies many vessels,Design data
+A-10,Control law,"PD with feed-forward, torque-first allocation",Assumed,Production control laws
+A-11,Component failure rates,10-300 FIT per part (see component FMEA),Representative magnitudes,Supplier FMEDA data
+A-12,Diagnostic coverage,90-99%; pre-arm test 95% or 99.9%,Assumed,Diagnostic coverage analysis
+A-13,Vehicle operating life,"10,000 h",Typical automotive mission profile,Programme mission profile
+A-14,Common-cause shares,"beta = 1% (computers), 2% (master valves)",Typical beta-factor range for diverse redundancy,Dependent failure analysis with test data
+A-15,Operating domain limits,"Wind < 8 m/s (gusts < 12), -10 to +40 C, dry paved surface",Proposed by this study,Validated limits
+A-16,Landing system,"Suspension 140 kN/m, 0.20 m travel; airbag 2.6 m2, 0.5 m stroke, 1.8 bar relief",Assumed,Drop tests

@@ -1,0 +1,490 @@
+<title>Roadster Hop Fault Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: flight-test console. Scenario rail left, rear-view replay centre, telemetry under it, outcome log below. */
+:root{
+  --bg:#eef1f2; --panel:#fbfcfc; --ink:#111a1f; --muted:#55646c; --line:#d3dadd; --grid:#e2e7e9;
+  --accent:#0b7ea3; --accent-soft:#0b7ea31a; --good:#1f7a45; --warn:#a0640a; --crit:#c0322a;
+  --car:#2b363c; --glass:#8fa3ad; --tail:#d4463a; --ghost:#8a9aa2; --ground:#c6ced2;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b1013; --panel:#121a1e; --ink:#e3eaed; --muted:#8e9ea6; --line:#26333b; --grid:#18232a;
+  --accent:#3fc0e8; --accent-soft:#3fc0e81f; --good:#4fcf83; --warn:#e4ad48; --crit:#ff6a5c;
+  --car:#c9d4d9; --glass:#4d6470; --tail:#ff6a5c; --ghost:#5d6f78; --ground:#33424a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1013; --panel:#121a1e; --ink:#e3eaed; --muted:#8e9ea6; --line:#26333b; --grid:#18232a;
+  --accent:#3fc0e8; --accent-soft:#3fc0e81f; --good:#4fcf83; --warn:#e4ad48; --crit:#ff6a5c;
+  --car:#c9d4d9; --glass:#4d6470; --tail:#ff6a5c; --ghost:#5d6f78; --ground:#33424a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;margin:0;text-wrap:balance}
+h1{font-size:clamp(26px,4vw,36px);line-height:1.05}
+h2{font-size:20px}
+.eyebrow{font-family:var(--f-display);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.lede{color:var(--muted);max-width:68ch;margin:6px 0 0}
+a{color:var(--accent)}
+.lab{display:grid;grid-template-columns:270px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.lab{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+/* scenario rail */
+.rail{padding:14px;display:flex;flex-direction:column;gap:14px}
+.grp{display:flex;flex-direction:column;gap:6px}
+.grp-h{font-family:var(--f-display);font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.opt{all:unset;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;border:1px solid transparent;font-size:13.5px}
+.opt:hover{background:var(--accent-soft)}
+.opt:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.pill{font-family:var(--f-mono);font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.safe{color:var(--good)} .hard{color:var(--warn)} .unsafe{color:var(--crit)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;padding:2px 0 0 10px}
+.seg button{all:unset;cursor:pointer;font-family:var(--f-mono);font-size:11.5px;padding:3px 7px;border-radius:5px;border:1px solid var(--line);color:var(--muted)}
+.seg button[aria-pressed="true"]{border-color:var(--accent);color:var(--ink);background:var(--accent-soft)}
+.seg button:focus-visible{outline:2px solid var(--accent)}
+.seg-label{font-size:12px;color:var(--muted);padding-left:10px}
+/* stage */
+.stage{display:flex;flex-direction:column;gap:12px;min-width:0}
+.view{position:relative;padding:0;overflow:hidden}
+canvas{display:block;width:100%;height:auto}
+.hud{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;pointer-events:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-family:var(--f-mono);font-size:11.5px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
+.chip b{font-weight:500;color:var(--muted);margin-right:4px}
+.transport{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px}
+@media (max-width:560px){.transport{grid-template-columns:auto auto 1fr}.speeds{grid-column:1/-1}}
+.play{all:unset;cursor:pointer;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--panel)}
+.play:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.clock{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;min-width:62px}
+.track{position:relative;padding-top:14px}
+.track input{width:100%;accent-color:var(--accent)}
+.mark{position:absolute;top:0;transform:translateX(-50%);font-family:var(--f-mono);font-size:10.5px;white-space:nowrap}
+.mark::after{content:"";display:block;width:2px;height:8px;margin:1px auto 0;background:currentColor}
+.speeds{display:flex;gap:4px}
+.speeds button{all:unset;cursor:pointer;font-family:var(--f-mono);font-size:12px;padding:4px 8px;border-radius:5px;border:1px solid var(--line);color:var(--muted)}
+.speeds button[aria-pressed="true"]{color:var(--ink);border-color:var(--accent);background:var(--accent-soft)}
+.speeds button:focus-visible{outline:2px solid var(--accent)}
+.tele{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:12px}
+@media (max-width:700px){.tele{grid-template-columns:1fr}}
+.readouts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.ro{background:var(--panel);padding:10px 12px}
+.ro span{display:block;font-size:11.5px;color:var(--muted);letter-spacing:.04em}
+.ro strong{font-family:var(--f-mono);font-weight:500;font-size:19px;font-variant-numeric:tabular-nums}
+.ro small{font-family:var(--f-mono);color:var(--muted);font-size:12px;margin-left:3px}
+.thrust{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.thrust h3{font-size:14px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline}
+.thrust h3 span{font-family:var(--f-mono);font-size:11px;color:var(--muted);font-weight:400}
+.bar{display:grid;grid-template-columns:30px minmax(0,1fr) 58px;gap:8px;align-items:center;font-family:var(--f-mono);font-size:12px}
+.bar .tr{height:10px;border-radius:3px;background:var(--grid);overflow:hidden}
+.bar .fill{height:100%;background:var(--accent);width:0}
+.bar .st{font-size:10.5px;text-align:right;color:var(--muted)}
+.bar.bad .fill{background:var(--crit)} .bar.bad .st{color:var(--crit)}
+.bar.off .st{color:var(--warn)}
+.result{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px}
+@media (max-width:700px){.result{grid-template-columns:1fr}}
+.card{padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card p{margin:0}
+.verdict{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.verdict .big{font-family:var(--f-display);font-weight:700;font-size:22px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.loads{display:flex;flex-direction:column;gap:6px}
+.lrow{display:grid;grid-template-columns:120px minmax(0,1fr) 50px;gap:8px;align-items:center;font-size:12.5px}
+.lrow .tr{height:10px;background:var(--grid);border-radius:3px;overflow:hidden}
+.lrow .fill{height:100%;background:var(--muted)}
+.lrow.bag .fill{background:var(--accent)}
+.lrow b{font-family:var(--f-mono);font-weight:500;text-align:right}
+.muted{color:var(--muted)} .small{font-size:12.5px}
+/* outcome log */
+.log{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:13px}
+th{font-family:var(--f-display);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:7px 8px;border-bottom:1px solid var(--grid)}
+td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+th.n{text-align:right}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--accent-soft)}
+tbody tr[aria-selected="true"]{background:var(--accent-soft);font-weight:600}
+.strip{display:flex;gap:2px;align-items:flex-end}
+.strip i{flex:1;height:22px;border-radius:2px;display:block}
+.strip-axis{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+footer{font-size:12.5px;color:var(--muted);max-width:90ch}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Cold-gas thruster hop · fault replay</div>
+    <h1>Roadster Hop Fault Lab</h1>
+    <p class="lede">Replays the hop simulator from the safety analysis, seen from behind the car. Pick a fault and a safety response, then watch what the thrusters, the gas and the car do. Every frame comes from the same physics model as the reports.</p>
+  </header>
+
+  <div class="lab">
+    <nav class="panel rail" id="rail" aria-label="Scenarios"></nav>
+
+    <section class="stage">
+      <div class="panel view">
+        <canvas id="cv" width="900" height="460" aria-label="Rear view of the car during the hop"></canvas>
+        <div class="hud">
+          <div class="chips"><span class="chip" id="chipMode"><b>Mode</b>Hop</span><span class="chip" id="chipMaster"><b>Master valves</b>Open</span></div>
+          <div class="chips"><span class="chip" id="chipFault"><b>Fault</b>None</span></div>
+        </div>
+      </div>
+
+      <div class="panel transport">
+        <button class="play" id="play" aria-label="Play"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path id="playIcon" d="M3 1.5L12 7L3 12.5Z" fill="currentColor"/></svg></button>
+        <div class="clock" id="clock">0.00 s</div>
+        <div class="track"><div id="marks"></div><input type="range" id="scrub" min="0" max="5" step="0.01" value="0" aria-label="Time"></div>
+        <div class="speeds" id="speeds"><button data-s="0.25">¼×</button><button data-s="0.5">½×</button><button data-s="1">1×</button></div>
+      </div>
+
+      <div class="tele">
+        <div class="readouts">
+          <div class="ro"><span>Height</span><strong id="rZ">0.0</strong><small>m</small></div>
+          <div class="ro"><span>Roll</span><strong id="rPhi">0</strong><small>°</small></div>
+          <div class="ro"><span>Vertical speed</span><strong id="rVz">0.0</strong><small>m/s</small></div>
+          <div class="ro"><span>Tank pressure</span><strong id="rP">400</strong><small>bar</small></div>
+          <div class="ro"><span>Gas temperature</span><strong id="rT">20</strong><small>°C</small></div>
+          <div class="ro"><span>Air left</span><strong id="rM">244</strong><small>kg</small></div>
+        </div>
+        <div class="panel thrust">
+          <h3>Lift thrust by group <span>kN, 9 kN max</span></h3>
+          <div id="bars"></div>
+        </div>
+      </div>
+
+      <div class="result">
+        <div class="panel card">
+          <div class="verdict"><span class="big" id="vBig">Safe landing</span><span class="pill" id="vPill">safe</span></div>
+          <p id="note" class="small"></p>
+          <dl class="kv" id="kv"></dl>
+        </div>
+        <div class="panel card">
+          <h3 style="font-size:15px">Peak body load at touchdown</h3>
+          <div class="loads" id="loads"></div>
+          <p class="small muted" id="loadNote"></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel log">
+    <h2>All scenarios at a glance</h2>
+    <p class="small muted" style="margin:0">Safe means touchdown slower than 5 m/s and tilted less than 30°. Select a row to replay it.</p>
+    <div class="tbl"><table><thead><tr><th>Scenario</th><th>Response</th><th class="n">Touchdown</th><th class="n">Vertical speed</th><th class="n">Roll</th><th class="n">Air used</th><th>Result</th></tr></thead><tbody id="tbody"></tbody></table></div>
+  </section>
+
+  <section class="panel log">
+    <h2>Why a stuck-closed valve is the weak spot</h2>
+    <p class="small muted" style="margin:0">Outcome of an outer-left valve sticking closed at each moment of the hop, with isolate-and-recover logic. Failures cluster in the roll, when the car needs that valve to stop rotating.</p>
+    <div class="strip" id="strip" role="img" aria-label="Stuck-closed outcome by fault time"></div>
+    <div class="strip-axis" id="stripAxis"></div>
+    <div class="legend"><span><i style="background:var(--good)"></i>Safe</span><span><i style="background:var(--warn)"></i>Hard landing</span><span><i style="background:var(--crit)"></i>Unsafe attitude</span></div>
+  </section>
+
+  <footer>
+    Model: planar roll-plane rigid body (1,850 kg, 600 kg·m²), four lift groups of 9 kN at ±0.35 m and ±0.85 m, 244 kg of air at 400 bar with adiabatic blowdown, PD control with torque-first thrust allocation. Assumed parameters, not Tesla data. Landing loads come from the drop model (0.20 m suspension, 0.5 m vented airbag) using the equivalent drop height of the touchdown speed. Details and code: <a href="https://claude.ai/code/artifact/77d8c6bf-46a1-4a47-bacc-a7e5fbb3f4d5" target="_blank" rel="noopener">simulation package</a> · <a href="https://claude.ai/code/artifact/57ba0b67-e955-4c9d-a965-75ee97364a97" target="_blank" rel="noopener">architecture and safety analysis</a>.
+  </footer>
+</div>
+
+<script>
+const D = __DATA__;
+const LOAD = __LOAD__;
+const G = 9.81, CG_H = 0.55;
+const S = Object.fromEntries(D.scenarios.map(s => [s.id, s]));
+const GROUPS = ["LO", "LI", "RI", "RO"];
+const RESP = {0: "No reaction", 1: "Cut all gas", 2: "Isolate and recover"};
+const OUT = {safe: "Safe landing", hard: "Hard landing", unsafe: "Unsafe attitude", none: "No landing"};
+const DELAYS = [20, 100, 200, 300, 400];
+
+const MENU = [
+  {h: "Reference", items: [["nominal", "No fault"]]},
+  {h: "Stuck-open valve at 1.45 s", items: [["so-undetected", "No reaction"], ["so-cut", "Cut all gas"], ["so-recover", "Isolate and recover"]], delay: true},
+  {h: "Stuck-closed valve", items: [["sc-ok", "Before the roll (0.90 s)"], ["sc-bad", "While inverted (1.45 s)"]]},
+  {h: "Leak, 30 kg/s at 1.3 s", items: [["leak-cut", "Cut all gas"], ["leak-recover", "Recover with what is left"]]},
+  {h: "Conditions", items: [["starved", "45% fill, no reserve check"], ["gust", "12 m/s crosswind gust"]]},
+];
+
+let cur = S["so-recover-20"], delay = 20, t = 0, playing = false, speed = 0.5, last = null;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = id => document.getElementById(id);
+
+function idFor(key) { return key === "so-recover" ? `so-recover-${delay}` : key; }
+
+function buildRail() {
+  const rail = $("rail"); rail.innerHTML = "";
+  MENU.forEach(g => {
+    const box = document.createElement("div"); box.className = "grp";
+    box.innerHTML = `<div class="grp-h">${g.h}</div>`;
+    g.items.forEach(([key, label]) => {
+      const s = S[idFor(key)];
+      const b = document.createElement("button"); b.className = "opt"; b.dataset.key = key;
+      b.innerHTML = `<span>${label}</span><span class="pill ${s.outcome}">${s.outcome}</span>`;
+      b.setAttribute("aria-pressed", String(cur.id === s.id));
+      b.onclick = () => load(idFor(key), true);
+      box.appendChild(b);
+    });
+    if (g.delay) {
+      const lab = document.createElement("div"); lab.className = "seg-label"; lab.textContent = "Time to detect and isolate";
+      const seg = document.createElement("div"); seg.className = "seg";
+      DELAYS.forEach(d => {
+        const b = document.createElement("button"); b.textContent = `${d} ms`;
+        b.setAttribute("aria-pressed", String(d === delay));
+        b.onclick = () => { delay = d; load(`so-recover-${d}`, true); };
+        seg.appendChild(b);
+      });
+      box.append(lab, seg);
+    }
+    rail.appendChild(box);
+  });
+}
+
+function respLabel(s) {
+  if (s.id === "nominal") return "No fault";
+  if (s.id.startsWith("so-recover")) return `${RESP[2]}, ${Math.round(s.delay * 1000)} ms`;
+  if (s.id.startsWith("sc-")) return `Recover; fault at ${s.faultT.toFixed(2)} s`;
+  if (s.id === "leak-recover") return "Recover with what is left";
+  if (s.fault) return RESP[s.strategy];
+  return s.note.split(".")[0];
+}
+function buildTable() {
+  const tb = $("tbody"); tb.innerHTML = "";
+  D.scenarios.forEach(s => {
+    const tr = document.createElement("tr"); tr.dataset.id = s.id; tr.tabIndex = 0;
+    tr.innerHTML = `<td>${s.id === "nominal" ? "Reference" : s.group}</td><td>${respLabel(s)}</td><td class="n">${s.land.t.toFixed(2)} s</td><td class="n">${Math.abs(s.land.vz).toFixed(1)} m/s</td><td class="n">${Math.abs(s.land.roll).toFixed(0)}°</td><td class="n">${s.land.gas.toFixed(0)} kg</td><td><span class="pill ${s.outcome}">${OUT[s.outcome]}</span></td>`;
+    tr.onclick = () => { if (s.id.startsWith("so-recover")) delay = Math.round(s.delay * 1000); load(s.id, true); window.scrollTo({top: 0, behavior: reduce ? "auto" : "smooth"}); };
+    tr.onkeydown = e => { if (e.key === "Enter") tr.onclick(); };
+    tb.appendChild(tr);
+  });
+}
+
+function buildStrip() {
+  const sc = D.meta.sc_scan, col = {safe: "var(--good)", hard: "var(--warn)", unsafe: "var(--crit)"};
+  $("strip").innerHTML = sc.map(([tt, o]) => `<i title="${tt.toFixed(2)} s: ${OUT[o]}" style="background:${col[o]}"></i>`).join("");
+  $("stripAxis").innerHTML = `<span>fault at ${sc[0][0].toFixed(2)} s</span><span>${sc[sc.length - 1][0].toFixed(2)} s</span>`;
+}
+
+function duration() { return cur.land.t + 0.8; }
+
+function load(id, autoplay) {
+  cur = S[id]; t = 0;
+  buildRail();
+  document.querySelectorAll("#tbody tr").forEach(r => r.setAttribute("aria-selected", String(r.dataset.id === id)));
+  $("scrub").max = duration().toFixed(2);
+  // event marks
+  const m = [];
+  if (cur.faultT != null) m.push([cur.faultT, "fault", "var(--crit)"]);
+  if (cur.faultT != null && cur.strategy > 0 && !cur.id.startsWith("sc-")) {
+    const lab = cur.strategy === 1 ? "cut" : (cur.id.startsWith("leak") ? "recover" : "isolate");
+    if (cur.delay < 0.15) m[m.length - 1][1] = `fault, ${lab} +${Math.round(cur.delay * 1000)} ms`;
+    else m.push([cur.faultT + cur.delay, lab, "var(--accent)"]);
+  }
+  if (cur.id === "gust") m.push([1.45, "gust", "var(--warn)"]);
+  m.push([cur.land.t, "touchdown", "var(--ink)"]);
+  $("marks").innerHTML = m.map(([x, l, c]) => `<span class="mark" style="left:${(x / duration() * 100).toFixed(2)}%;color:${c}">${l}</span>`).join("");
+  // verdict + facts
+  $("vBig").textContent = OUT[cur.outcome];
+  $("vBig").className = "big " + cur.outcome;
+  $("vPill").className = "pill " + cur.outcome; $("vPill").textContent = cur.outcome;
+  $("note").textContent = cur.note;
+  const L = cur.land;
+  $("kv").innerHTML = `<dt>Touchdown</dt><dd>${L.t.toFixed(2)} s</dd><dt>Vertical speed</dt><dd>${Math.abs(L.vz).toFixed(1)} m/s</dd><dt>Roll at touchdown</dt><dd>${L.roll.toFixed(0)}°</dd><dt>Sideways drift</dt><dd>${Math.abs(L.y).toFixed(1)} m</dd><dt>Air used</dt><dd>${L.gas.toFixed(0)} kg${cur.id.startsWith("leak") ? " incl. leak" : ""}</dd>`;
+  renderLoads();
+  playing = !!autoplay && !reduce;
+  if (reduce) t = autoplay ? cur.land.t : Math.min(1.6, cur.land.t);
+  setPlayIcon(); draw();
+}
+
+function interp(arr, x) {
+  if (x <= arr[0]) return arr[0][1];
+  for (let i = 0; i < arr.length - 1; i++) if (x <= arr[i + 1][0]) { const [x0, y0] = arr[i], [x1, y1] = arr[i + 1]; return y0 + (y1 - y0) * (x - x0) / (x1 - x0); }
+  return arr[arr.length - 1][1];
+}
+function renderLoads() {
+  const L = cur.land, h = L.vz * L.vz / (2 * G);
+  if (Math.abs(L.roll) > 30) {
+    $("loads").innerHTML = `<p class="small"><span class="unsafe" style="font-weight:600">Roof or side impact at ${Math.abs(L.roll).toFixed(0)}°.</span> The drop model covers upright landings only, and neither suspension nor an underfloor airbag protects this case.</p>`;
+    $("loadNote").textContent = `Touchdown speed ${Math.abs(L.vz).toFixed(1)} m/s is the same as a ${h.toFixed(1)} m fall.`;
+    return;
+  }
+  const pts = (k) => LOAD.h.map((x, i) => [x, LOAD[k][i]]);
+  const a = interp(pts("susp"), Math.min(h, 8)), b = interp(pts("bag"), Math.min(h, 8)), mx = 40;
+  const armed = h >= 1.5;
+  $("loads").innerHTML = `<div class="lrow"><span>Suspension only</span><div class="tr"><div class="fill" style="width:${a / mx * 100}%"></div></div><b>${a.toFixed(0)} g</b></div>` +
+    `<div class="lrow bag"><span>With airbag</span><div class="tr"><div class="fill" style="width:${(armed ? b : a) / mx * 100}%"></div></div><b>${(armed ? b : a).toFixed(0)} g</b></div>`;
+  $("loadNote").textContent = `Touchdown at ${Math.abs(L.vz).toFixed(1)} m/s equals a ${h.toFixed(1)} m drop. ` + (armed ? "The airbag arms above 1.5 m and fires near the ground." : "Below 1.5 m the airbag stays disarmed, so loads are the same.");
+}
+
+function frameAt(x) {
+  const F = cur.frames, dt = D.meta.dt;
+  let i = Math.min(Math.floor(x / dt), F.length - 2);
+  if (x >= F[F.length - 1][0]) return F[F.length - 1];
+  i = Math.max(0, i);
+  while (i < F.length - 2 && F[i + 1][0] < x) i++;
+  const a = F[i], b = F[i + 1], u = Math.max(0, Math.min(1, (x - a[0]) / (b[0] - a[0] || 1)));
+  return a.map((v, k) => v + (b[k] - v) * u);
+}
+
+function valveState(gi, x) {
+  const s = cur, ft = s.faultT, act = ft != null ? ft + s.delay : Infinity;
+  const so = s.id.startsWith("so-"), sc = s.id.startsWith("sc-");
+  if (s.strategy === 1 && ft != null && x >= act) return ["gas cut", "off"];
+  if (so && gi === 3 && x >= ft) {
+    if (s.strategy === 2 && x >= act) return ["isolated", "off"];
+    return ["stuck open", "bad"];
+  }
+  if (sc && gi === 0 && x >= ft) return ["stuck shut", "bad"];
+  return null;
+}
+
+/* ---------- canvas ---------- */
+const cv = $("cv"), ctx = cv.getContext("2d");
+let W = 900, H = 460, DPR = 1;
+function size() {
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = cv.parentElement.clientWidth; H = Math.max(300, Math.min(520, W * 0.52));
+  cv.width = W * DPR; cv.height = H * DPR; cv.style.height = H + "px";
+  draw();
+}
+function tok(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+function draw() {
+  if (!cur) return;
+  const C = {ink: tok("--ink"), muted: tok("--muted"), grid: tok("--grid"), line: tok("--line"), accent: tok("--accent"),
+    crit: tok("--crit"), warn: tok("--warn"), good: tok("--good"), car: tok("--car"), glass: tok("--glass"),
+    tail: tok("--tail"), ghost: tok("--ghost"), ground: tok("--ground"), panel: tok("--panel")};
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.fillStyle = C.panel; ctx.fillRect(0, 0, W, H);
+  const zMin = -0.7, zMax = 7.6, padL = 44, padB = 8, padT = 44;
+  const s = Math.min((W - padL - 16) / 18, (H - padT - padB) / (zMax - zMin));
+  const cx = padL + (W - padL - 16) / 2;
+  const X = y => cx + y * s, Z = z => H - padB - (z - zMin) * s;
+  // grid
+  ctx.lineWidth = 1; ctx.strokeStyle = C.grid; ctx.fillStyle = C.muted;
+  ctx.font = `11px ${tok("--f-mono") || "monospace"}`; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (let z = 0; z <= 7; z++) { ctx.beginPath(); ctx.moveTo(padL, Z(z)); ctx.lineTo(W - 10, Z(z)); ctx.stroke(); ctx.fillText(z + " m", padL - 8, Z(z)); }
+  // semi-truck reference
+  ctx.setLineDash([6, 5]); ctx.strokeStyle = C.ghost; ctx.beginPath(); ctx.moveTo(padL, Z(4)); ctx.lineTo(W - 10, Z(4)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.textAlign = "left"; ctx.fillStyle = C.muted; ctx.fillText("Semi truck roof, about 4 m", padL + 8, Z(4) - 9);
+  // ground
+  ctx.fillStyle = C.ground; ctx.fillRect(padL, Z(0), W - padL - 10, H - Z(0));
+  ctx.strokeStyle = C.muted; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(padL, Z(0)); ctx.lineTo(W - 10, Z(0)); ctx.stroke();
+  // ghost nominal path
+  if (cur.id !== "nominal") {
+    ctx.setLineDash([3, 4]); ctx.strokeStyle = C.ghost; ctx.lineWidth = 1.25; ctx.beginPath();
+    S.nominal.frames.forEach((f, i) => { const px = X(f[1]), pz = Z(f[2] + CG_H); i ? ctx.lineTo(px, pz) : ctx.moveTo(px, pz); }); ctx.stroke(); ctx.setLineDash([]);
+  }
+  // trail
+  ctx.strokeStyle = C.accent; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.55; ctx.beginPath();
+  let started = false;
+  for (const f of cur.frames) { if (f[0] > t) break; const px = X(f[1]), pz = Z(f[2] + CG_H); started ? ctx.lineTo(px, pz) : (ctx.moveTo(px, pz), started = true); }
+  const fr = frameAt(t); if (started) { ctx.lineTo(X(fr[1]), Z(fr[2] + CG_H)); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+  // car
+  const [ , y, z, phi] = fr, F = fr.slice(4, 8);
+  ctx.save(); ctx.translate(X(y), Z(z + CG_H)); ctx.rotate(-phi); ctx.scale(s, -s);
+  // plumes
+  const landed = t >= cur.land.t;
+  D.meta.liftD.forEach((d, gi) => {
+    const f = landed ? 0 : F[gi]; const st = valveState(gi, t);
+    if (f > 0.05) {
+      const L = 0.25 + 1.9 * Math.min(f, 9) / 9, w = 0.11;
+      ctx.fillStyle = st && st[1] === "bad" ? C.crit : C.accent; ctx.globalAlpha = 0.85;
+      ctx.beginPath(); ctx.moveTo(d - w, -0.47); ctx.lineTo(d + w, -0.47); ctx.lineTo(d + w * 2.2, -0.47 - L); ctx.lineTo(d - w * 2.2, -0.47 - L); ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle = st ? (st[1] === "bad" ? C.crit : C.warn) : C.muted;
+    ctx.fillRect(d - 0.09, -0.5, 0.18, 0.08);
+  });
+  // wheels
+  ctx.fillStyle = C.ink;
+  [-0.8, 0.8].forEach(wx => { ctx.beginPath(); ctx.roundRect(wx - 0.17, -0.55, 0.34, 0.62, 0.08); ctx.fill(); });
+  // body
+  ctx.fillStyle = C.car; ctx.beginPath(); ctx.roundRect(-1.0, -0.42, 2.0, 0.66, 0.12); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-0.7, 0.22); ctx.lineTo(0.7, 0.22); ctx.lineTo(0.46, 0.6); ctx.lineTo(-0.46, 0.6); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.glass; ctx.beginPath(); ctx.moveTo(-0.6, 0.27); ctx.lineTo(0.6, 0.27); ctx.lineTo(0.41, 0.55); ctx.lineTo(-0.41, 0.55); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.tail; ctx.fillRect(-0.95, 0.04, 0.42, 0.07); ctx.fillRect(0.53, 0.04, 0.42, 0.07);
+  ctx.restore();
+  // touchdown marker
+  if (landed) {
+    const col = cur.outcome === "safe" ? C.good : cur.outcome === "hard" ? C.warn : C.crit;
+    ctx.strokeStyle = col; ctx.lineWidth = 2;
+    const k = Math.min(1, (t - cur.land.t) / 0.4);
+    ctx.beginPath(); ctx.ellipse(X(y), Z(0), 30 + 40 * k, 6 + 6 * k, 0, 0, Math.PI * 2); ctx.globalAlpha = 1 - 0.6 * k; ctx.stroke(); ctx.globalAlpha = 1;
+  }
+  // labels
+  ctx.fillStyle = C.muted; ctx.textAlign = "center"; ctx.font = `11px ${tok("--f-mono") || "monospace"}`;
+  ctx.fillText("rear view, looking forward · ground", cx, Z(0) + 16);
+  updateTele(fr, landed);
+}
+
+function updateTele(fr, landed) {
+  const vz = (() => { const a = frameAt(Math.max(0, t - 0.02)), b = frameAt(t); return t > 0 ? (b[2] - a[2]) / Math.min(0.02, t) : 0; })();
+  $("clock").textContent = t.toFixed(2) + " s";
+  $("scrub").value = t.toFixed(2);
+  $("rZ").textContent = Math.max(0, fr[2]).toFixed(1);
+  let ph = ((fr[3] * 180 / Math.PI) % 360 + 540) % 360 - 180;
+  $("rPhi").textContent = ph.toFixed(0);
+  $("rVz").textContent = (landed ? 0 : vz).toFixed(1);
+  $("rP").textContent = fr[8].toFixed(0); $("rT").textContent = fr[9].toFixed(0); $("rM").textContent = fr[10].toFixed(0);
+  $("bars").innerHTML = GROUPS.map((g, i) => {
+    const st = valveState(i, t), f = landed ? 0 : fr[4 + i];
+    const cls = st ? (st[1] === "bad" ? "bad" : "off") : "";
+    return `<div class="bar ${cls}"><span>${g}</span><div class="tr"><div class="fill" style="width:${Math.min(100, f / 9 * 100)}%"></div></div><span class="st">${st ? st[0] : f.toFixed(1)}</span></div>`;
+  }).join("");
+  const ft = cur.faultT, act = ft != null ? ft + cur.delay : Infinity;
+  let mode = "Hop";
+  if (landed) mode = "Landed";
+  else if (cur.strategy === 2 && ft != null && t >= act && !cur.id.startsWith("sc-")) mode = "Recovery";
+  else if (cur.id.startsWith("sc-") && t >= ft + cur.delay) mode = "Recovery";
+  $("chipMode").innerHTML = `<b>Mode</b>${mode}`;
+  const cut = (cur.strategy === 1 && ft != null && t >= act) || landed;
+  $("chipMaster").innerHTML = `<b>Master valves</b>${cut ? "Closed" : "Open"}`;
+  const fault = ft != null && t >= ft ? cur.fault : (cur.id === "gust" && t >= 1.45 ? "Gust 12 m/s" : "None");
+  $("chipFault").innerHTML = `<b>Fault</b>${fault}`;
+  $("chipFault").style.color = fault !== "None" ? "var(--crit)" : "";
+}
+
+function setPlayIcon() {
+  $("playIcon").setAttribute("d", playing ? "M3 1.5H6V12.5H3ZM8 1.5H11V12.5H8Z" : "M3 1.5L12 7L3 12.5Z");
+  $("play").setAttribute("aria-label", playing ? "Pause" : "Play");
+}
+function tick(now) {
+  if (playing) {
+    const dtw = last == null ? 0 : Math.min(0.05, (now - last) / 1000);
+    t += dtw * speed;
+    if (t >= duration()) { t = duration(); playing = false; setPlayIcon(); }
+    draw();
+  }
+  last = now; requestAnimationFrame(tick);
+}
+$("play").onclick = () => { if (t >= duration() - 0.01) t = 0; playing = !playing; setPlayIcon(); };
+$("scrub").oninput = e => { t = parseFloat(e.target.value); playing = false; setPlayIcon(); draw(); };
+document.querySelectorAll("#speeds button").forEach(b => {
+  b.setAttribute("aria-pressed", String(parseFloat(b.dataset.s) === speed));
+  b.onclick = () => { speed = parseFloat(b.dataset.s); document.querySelectorAll("#speeds button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); };
+});
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "BUTTON") return;
+  if (e.code === "Space") { e.preventDefault(); $("play").click(); }
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+new MutationObserver(draw).observe(document.documentElement, {attributes: true, attributeFilter: ["data-theme"]});
+window.addEventListener("resize", size);
+
+buildTable(); buildStrip();
+load("so-recover-20", false);
+t = 1.6; draw();
+size();
+if (!reduce) setTimeout(() => { t = 0; playing = true; setPlayIcon(); }, 900);
+requestAnimationFrame(tick);
+</script>

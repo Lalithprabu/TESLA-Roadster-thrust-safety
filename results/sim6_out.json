@@ -1,0 +1,104 @@
+{
+  "fmeda_rows": [
+    {
+      "element": "Master valve A (NC, spring return)",
+      "fit": 40,
+      "safety_related_fit": 40.0,
+      "spf_rf_fit": 0.0,
+      "latent_fit": 0.2
+    },
+    {
+      "element": "Master valve B (NC, spring return)",
+      "fit": 40,
+      "safety_related_fit": 40.0,
+      "spf_rf_fit": 0.0,
+      "latent_fit": 0.2
+    },
+    {
+      "element": "Thruster valve x10 (stuck open)",
+      "fit": 100,
+      "safety_related_fit": 100.0,
+      "spf_rf_fit": 0.0,
+      "latent_fit": 5.0
+    },
+    {
+      "element": "Thruster valve drivers x10",
+      "fit": 50,
+      "safety_related_fit": 30.0,
+      "spf_rf_fit": 0.0,
+      "latent_fit": 1.5
+    },
+    {
+      "element": "Thrust control unit (lockstep MCU)",
+      "fit": 100,
+      "safety_related_fit": 50.0,
+      "spf_rf_fit": 0.0,
+      "latent_fit": 0.5
+    },
+    {
+      "element": "Safety monitor (dissimilar MCU)",
+      "fit": 60,
+      "safety_related_fit": 30.0,
+      "spf_rf_fit": 0.0,
+      "latent_fit": 0.3
+    },
+    {
+      "element": "Arm-line driver and harness",
+      "fit": 20,
+      "safety_related_fit": 20.0,
+      "spf_rf_fit": 0.04,
+      "latent_fit": 0.98
+    },
+    {
+      "element": "Zone authorisation (GNSS + beacon)",
+      "fit": 80,
+      "safety_related_fit": 24.0,
+      "spf_rf_fit": 0.0,
+      "latent_fit": 2.4
+    },
+    {
+      "element": "Low-voltage power (dual feed)",
+      "fit": 30,
+      "safety_related_fit": 12.0,
+      "spf_rf_fit": 0.0,
+      "latent_fit": 0.12
+    }
+  ],
+  "sg1_metrics": {
+    "SPFM_pct": 99.99,
+    "LFM_pct": 96.76,
+    "PMHF_FIT": 0.053,
+    "PMHF_single_point_FIT": 0.04,
+    "PMHF_dual_point_FIT": 0.00485,
+    "PMHF_common_cause_FIT": 0.008,
+    "targets_ASIL_D": {
+      "SPFM_pct": 99,
+      "LFM_pct": 90,
+      "PMHF_FIT": 10
+    }
+  },
+  "per_hop": {
+    "C: recover, 9 kN groups, 95 % pre-arm test": {
+      "stuck_open": 8.27e-07,
+      "stuck_closed": 9.02e-06,
+      "leak": 1.14e-07,
+      "total_faults": 9.96e-06,
+      "sotif_upper_bound_from_mc": 0.00137
+    },
+    "D: recover, 11 kN groups, 95 % pre-arm test": {
+      "stuck_open": 6.21e-07,
+      "stuck_closed": 8.17e-06,
+      "leak": 1.36e-07,
+      "total_faults": 8.92e-06,
+      "sotif_upper_bound_from_mc": 0.00137
+    },
+    "D + 99.9 % pre-arm valve function test": {
+      "stuck_open": 1.36e-08,
+      "stuck_closed": 1.79e-07,
+      "leak": 1.36e-07,
+      "total_faults": 3.29e-07,
+      "sotif_upper_bound_from_mc": 0.00137
+    }
+  },
+  "target_catastrophic_per_hop": 1e-07
+}

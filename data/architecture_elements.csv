@@ -1,0 +1,23 @@
+id,name,type,description
+S1,High-voltage energy,Subsystem,"Battery pack and DC-DC converters powering compressor, fans, valves and compute"
+S2,Gas supply,Subsystem,"Onboard compressor, air dryer, ground fill port, check valves"
+S3,Gas storage,Subsystem,"COPV bank (about 600 L at 400 bar), per-vessel isolation and relief, pressure and temperature sensing"
+S4,Distribution,Subsystem,"Two normally closed master valves in series, regulators, manifold, line valves"
+S5,Thruster array,Subsystem,Rear nozzles (Thrust) or 10 perimeter nozzles (Rocket) with fast electric valves and heaters
+S6,Suction,Subsystem,"Multi-mode fans, ground-sealing skirt, plenum pressure sensors"
+S7,Chassis,Subsystem,"Motors, brakes, steer-by-wire, active suspension, active aero"
+S8,Sensing,Subsystem,"Three IMUs, altimeters, satellite positioning, wheel speeds, cameras"
+S9,Control compute,Subsystem,"Mode manager, vehicle dynamics controller, thrust control unit, independent safety monitor"
+S10,HMI and arming,Subsystem,"Yoke, mode selector, physical arm switch, displays and alarms"
+S11,Protection,Subsystem,"Restraints, rollover structure, external airbags, thrust-neutral emergency venting"
+IF-01,Arm enable A,Interface,"Safety monitor to master valve A switch; hardwired, energise-to-open"
+IF-02,Arm enable B,Interface,"Thrust control unit to master valve B switch; hardwired, energise-to-open"
+IF-03,Thrust command,Interface,"Thrust control unit to valve drivers; 1 kHz, 2 ms, authenticated"
+IF-04,Driver enable,Interface,Safety monitor to valve-driver supply; hardwired
+IF-05,Zone authorisation,Interface,"Positioning and beacon to mode manager; 10 Hz, two sources"
+IF-06,Attitude and rates,Interface,"IMUs to both computers; 1 kHz, voting"
+IF-07,Gas pressure and temperature,Interface,"Sensors to both computers; 500 Hz, dual dissimilar"
+IF-08,Suction plenum pressure,Interface,Sensors to vehicle dynamics controller; 200 Hz
+IF-09,Mode request,Interface,HMI to mode manager; physical switch plus two-step confirm
+IF-10,Crash signal,Interface,Airbag controller to both computers; hardwired plus bus
+IF-11,Line isolation command,Interface,"Thrust control unit to line valves; 20 ms, read-back"

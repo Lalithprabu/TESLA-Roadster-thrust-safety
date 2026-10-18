@@ -1,0 +1,10 @@
+id,threat,damage,impact,before_factors,before_points,before_feasibility,before_risk,controls,cyber_goal,after_factors,after_points,after_feasibility,after_risk
+TS1,Remote pivot from telematics to thrust command,DS1,Severe,4-6-3-0-4,17,Medium,4,"CC-01, CC-02",CG1,19-8-7-0-7,41,Very low,2
+TS2,Diagnostic-port injection of mode and zone data,"DS1, DS3",Severe,1-3-0-1-0,5,High,5,"CC-01, CC-03",CG1,4-6-3-4-4,21,Low,3
+TS3,Satellite spoofing plus beacon replay,DS3,Severe,1-3-0-1-4,9,High,5,"CC-04, CC-05, CC-13",CG2,4-6-3-4-4,21,Low,3
+TS4,Owner reflashes thrust software,DS7,Severe,1-3-0-0-4,8,High,5,"CC-06, CC-07",CG3,4-8-7-0-4,23,Low,3
+TS5,Malicious or tampered software update,"DS1, DS5",Severe,4-6-7-4-0,21,Low,3,"CC-06, CC-08",CG3,19-8-11-10-7,55,Very low,2
+TS6,Spoofed fill station commands over-pressure,DS4,Severe,4-3-3-1-4,15,Medium,4,CC-09,CG4,19-6-7-4-7,43,Very low,2
+TS7,Bus jamming during a hop,DS2,Severe,0-3-0-4-0,7,High,5,"CC-02, CC-10",CG5,4-6-3-4-4,21,Low,3
+TS8,Theft of flight logs from the cloud,DS8,Major,4-6-3-0-4,17,Medium,3,CC-11,CG6,4-6-7-0-4,21,Low,2
+TS9,Ransomware through infotainment,DS6,Major,4-6-3-0-4,17,Medium,3,"CC-01, CC-12",CG6,4-6-7-0-4,21,Low,2

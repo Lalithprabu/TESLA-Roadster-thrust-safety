@@ -1,0 +1,7 @@
+id,goal,cal,threats
+CG1,No thrust command or mode change can enter the thrust domain from outside it,CAL 4,"TS1, TS2"
+CG2,Zone authorisation cannot be faked by spoofing or replay,CAL 4,TS3
+CG3,"Only genuine, approved software runs in the thrust domain",CAL 4,"TS4, TS5"
+CG4,No external party can command a fill above the rated pressure,CAL 3,TS6
+CG5,Loss or jamming of thrust-domain communication never leads to loss of control,CAL 3,TS7
+CG6,Personal data and non-safety functions are protected and segregated,CAL 2,"TS8, TS9"

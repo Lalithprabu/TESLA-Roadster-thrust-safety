@@ -1,0 +1,96 @@
+{
+  "n_rows": 31,
+  "action_priority": {
+    "H": 23,
+    "M": 6,
+    "L": 2
+  },
+  "sg1": {
+    "lambda_safety_related_FIT": 1236.0,
+    "lambda_MPF_FIT": 407.4,
+    "lambda_latent_FIT": 16.43,
+    "SPF_FIT": 0.006,
+    "SPFM_pct": 100.0,
+    "LFM_pct": 98.67,
+    "PMHF_FIT": 0.00607,
+    "n_cut_sets": 36,
+    "order_counts": {
+      "1": 1,
+      "2": 2,
+      "3": 24,
+      "4": 9
+    },
+    "top_cut_sets": [
+      {
+        "cut_set": "ccf_computers",
+        "FIT": 0.006,
+        "order": 1
+      },
+      {
+        "cut_set": "ccf_masters + tv_open",
+        "FIT": 6.74e-05,
+        "order": 2
+      },
+      {
+        "cut_set": "mon_wrong + tcu_wrong",
+        "FIT": 2.4e-07,
+        "order": 2
+      },
+      {
+        "cut_set": "tv_open + vA_open + vB_open",
+        "FIT": 1.25e-08,
+        "order": 3
+      },
+      {
+        "cut_set": "harnA + tv_open + vB_open",
+        "FIT": 3.65e-09,
+        "order": 3
+      },
+      {
+        "cut_set": "harnB + tv_open + vA_open",
+        "FIT": 3.65e-09,
+        "order": 3
+      },
+      {
+        "cut_set": "hssA + tv_open + vB_open",
+        "FIT": 1.86e-09,
+        "order": 3
+      },
+      {
+        "cut_set": "hssB + tv_open + vA_open",
+        "FIT": 1.86e-09,
+        "order": 3
+      }
+    ],
+    "targets_ASIL_D": {
+      "SPFM_pct": 99,
+      "LFM_pct": 90,
+      "PMHF_FIT": 10
+    }
+  },
+  "high_priority": [
+    "COPV (Type IV, ~100 L, 400 bar): Liner or boss leak",
+    "Pressure relief device (burst disc + thermal): Fails to open in fire",
+    "Group isolation valve (NC solenoid): Stuck open",
+    "Group isolation valve (NC solenoid): Stuck closed",
+    "Master valve A / B (NC solenoid, series): Stuck open or seat leak",
+    "Master valve A / B (NC solenoid, series): Closes in flight (coil or power loss)",
+    "Pressure regulator (dome-loaded): Fails low or freezes",
+    "Line isolation valve (NC solenoid): Stuck open",
+    "Line isolation valve (NC solenoid): Stuck closed",
+    "Thruster valve (fast solenoid): Stuck open",
+    "Thruster valve (fast solenoid): Stuck closed",
+    "Thruster valve (fast solenoid): Slow response",
+    "Pressure transducer (strain gauge): Drift or stuck in range",
+    "IMU (MEMS): Wrong output",
+    "Thrust control unit (lockstep MCU): Wrong output",
+    "Thrust control unit (lockstep MCU): Loss of function in flight",
+    "Safety monitor (dissimilar MCU): Wrong output (enable)",
+    "Safety monitor (dissimilar MCU): Loss of function in flight",
+    "High-side switch, master valve A / B: Short (stuck on)",
+    "High-side switch, master valve A / B: Open",
+    "Low-side valve driver: Short (valve on)",
+    "Low-side valve driver: Open (valve off)",
+    "Low-voltage supply, thrust domain: Loss in flight"
+  ]
+}

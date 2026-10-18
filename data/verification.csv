@@ -1,0 +1,26 @@
+id,covers,method,pass_criterion,status
+VER-01,"TSR-01, TSR-03",FMEDA; HIL fault injection; vehicle leak-down test,"SPFM >= 99%, LFM >= 90%, PMHF < 10 FIT; no gas flow after any single fault",Analysis done
+VER-02,TSR-02,HIL test of every combination of arming inputs,Arms only when all conditions hold,Not started
+VER-03,"TSR-04, CC-01, CC-12",Architecture review; penetration test,No external route to a thrust command,Not started
+VER-04,TSR-05,HIL sensor-fault injection,Any single sensor fault detected,Not started
+VER-05,TSR-06,"Burst, cycling, fire, drop and impact tests",Burst ratio >= 2.25; all tests passed,Not started
+VER-06,TSR-07,Valve timing bench; crash test with charged tanks,Valves closed <= 50 ms; no projectile; no net vent thrust,Not started
+VER-07,TSR-08,Track test with controlled skirt leak; HIL,Limits applied <= 100 ms; car stays on line,Not started
+VER-08,TSR-09,Sim 3; HIL timing measurement,<= 20 ms measured; FTTI >= 200 ms confirmed,Simulated
+VER-09,TSR-10,Sim 4; track test with reduced fill,No gas-starved landing,Simulated
+VER-10,TSR-11,Sim 4; HIL,Leak cases land safely,Simulated
+VER-11,TSR-12,Sim 2; HIL,Upright landing after a mid-roll fault,Simulated
+VER-12,TSR-13,HIL sensor-fault injection,Single IMU fault masked,Not started
+VER-13,TSR-14,Sim 5; instrumented drop tests,Peak <= 15 g from 5 m; no deployment below 1.5 m or on road,Simulated
+VER-14,TSR-15,"Sim 3, Sim 4; thrust stand",Remaining lift >= 1.1 x weight,Simulated
+VER-15,TSR-16,Diagnostic coverage analysis; HIL,Coverage >= 99.9% for stuck-open and stuck-closed,Analysis done
+VER-16,TSR-17,Sim 4; design study,>= 50% roll-braking authority remains,Gap found
+VER-17,TSR-18,Cold-soak and full-discharge tests of COPVs and valves,"No leak, crack or sticking at minimum temperature",Not started
+VER-18,"TSR-19, CC-09",Fill-station test,Wet air refused,Not started
+VER-19,TSR-20,Sim 3 sweep; HIL,No bad outcomes at delays <= 50 ms,Gap found
+VER-20,TSR-02,Track test with dummy targets in the clear zone,Arming refused with a target in the zone,Not started
+VER-21,"TSR-04, CC-02, CC-03, CC-06, CC-07, CC-08, CC-11","Fuzzing, penetration test, code review (CG1-CG3)",No successful attack at CAL 4 depth,Not started
+VER-22,TSR-21,"HIL injection of power, coil, switch and computer loss in Hop mode",No master valve closes within 5 s of any single fault,Analysis done
+VER-23,"TSR-22, CC-10",HIL controller-loss injection; extended Sim 2,Backup takes over <= 50 ms; upright landing <= 5 m/s,Analysis done
+VER-24,TSR-23,HIL bus-loss injection,No valve opens unintentionally; attitude held,Analysis done
+VER-25,"CC-04, CC-05, CC-13",Spoofing and replay attack on a test track; HIL with simulated satellite and beacon signals,No arming with a spoofed fix or replayed beacon; monitor flags a zone mismatch within 1 s,Not started

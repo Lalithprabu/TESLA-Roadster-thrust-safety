@@ -1,0 +1,15 @@
+id,requirement,safety_goal,asil
+FSR-1.1,Keep the gas path to the nozzles closed unless two independent channels both authorise it,SG1,D
+FSR-1.2,"Authorise thrust only with driver consent, an authorised zone confirmed by two independent sources and passed pre-arm checks",SG1,D
+FSR-1.3,Accept thrust commands only from authenticated sources inside the thrust domain,SG1,D
+FSR-2.1,"Contain the stored gas under all foreseeable pressure, temperature and impact loads",SG2,D
+FSR-2.2,"On crash or fire, isolate every vessel and vent only without net thrust",SG2,D
+FSR-3.1,Maintain steering control (allocated to the steer-by-wire item; outside this item),SG3,D
+FSR-4.1,Detect loss of downforce and limit speed and cornering before grip is exceeded,SG4,C
+FSR-5.1,Detect asymmetric thrust during a launch and stop it,SG5,C
+FSR-6.1,Start a manoeuvre only when the remaining gas can finish it after one fault,SG6,B
+FSR-6.2,"Respond to any in-flight fault with recovery to an upright landing, never with loss of all thrust",SG6,B
+FSR-6.3,Isolate a faulty thruster path and compensate with the others,SG6,B
+FSR-6.4,"Estimate attitude, height and gas state with tolerance to one sensor fault",SG6,B
+FSR-7.1,Refuse to arm unless the clear zone is empty and wind is within limits,SG7,B
+FSR-8.1,Arm external airbags only in Hop mode above 1.5 m,SG8,B

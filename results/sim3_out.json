@@ -1,0 +1,16 @@
+{
+  "9000N": {
+    "share_bad_at_20ms_pct": 4.1,
+    "share_bad_at_100ms_pct": 2.0,
+    "share_bad_at_300ms_pct": 20.4,
+    "first_delay_with_unsafe_attitude_ms": 370,
+    "first_delay_bad_over_10pct_ms": 200
+  },
+  "11000N": {
+    "share_bad_at_20ms_pct": 2.0,
+    "share_bad_at_100ms_pct": 0.0,
+    "share_bad_at_300ms_pct": 0.0,
+    "first_delay_with_unsafe_attitude_ms": null,
+    "first_delay_bad_over_10pct_ms": 440
+  }
+}

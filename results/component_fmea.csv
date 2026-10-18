@@ -1,0 +1,32 @@
+component,qty,mode,effect,S,goal,cause,prevention,O,design_verification,D,AP,field_diagnostic,DC_pct,FIT_mode_total
+"COPV (Type IV, ~100 L, 400 bar)",6,Rupture,Blast and fragments,10,SG2,"Fatigue, impact or heat damage","Burst ratio >= 2.25, impact shield, segregation",3,"Burst, cycle, fire, drop tests (GTR 13 style)",2,L,"Impact log, pressure-rate monitor",60,3.0
+"COPV (Type IV, ~100 L, 400 bar)",6,Liner or boss leak,Gas loss; reserve error in flight,9,SG6,"Liner fatigue, seal ageing","Qualified seals, cold-soak qualification",4,Leak and permeation test after cold cycling,3,H,Pressure decay vs model,95,57.0
+Pressure relief device (burst disc + thermal),6,Opens early,Uncontrolled vent; possible net thrust,8,SG2,Disc fatigue,"Rating margin, thrust-neutral diffuser",4,Cycle test of discs,3,M,Pressure drop,99,18.0
+Pressure relief device (burst disc + thermal),6,Fails to open in fire,Tank rupture in fire,10,SG2,"Corrosion, wrong part fitted","Dual thermal and pressure PRD, poka-yoke fitting",4,Bonfire test,2,H,None in service,0,12.0
+Group isolation valve (NC solenoid),3,Stuck open,Group cannot be isolated after crash,9,SG2,"Seat contamination, ice","Filter, dry air, heated body",4,Contamination and cold-soak test,3,H,Power-on leak-down test,99,45.0
+Group isolation valve (NC solenoid),3,Stuck closed,Group gas unavailable; lower reserve,7,SG6,"Coil open, armature seizure",Coil derating,6,Life test,3,H,Pre-arm function test,99,105.0
+"Master valve A / B (NC solenoid, series)",2,Stuck open or seat leak,One SG1 barrier lost (latent),10,SG1,"Seat damage, ice, debris","Different suppliers for A and B, filter, heated body",4,"Contamination, cold-soak, life tests",3,H,"Inter-stage and manifold pressure, power-on leak-down",99,80.0
+"Master valve A / B (NC solenoid, series)",2,Closes in flight (coil or power loss),All thrust lost mid-hop,10,SG6,"Coil open, driver or supply loss","Dual-wound coil, hold-up energy store (TSR-21)",4,HIL power-loss injection,3,H,Coil current monitor,90,90.0
+Pressure regulator (dome-loaded),3,Fails high,Over-pressure in manifold; thrust excess,8,SG5,"Seat leak, creep",Second stage plus relief valve,4,Endurance test,3,M,Manifold pressure,99,54.0
+Pressure regulator (dome-loaded),3,Fails low or freezes,Thrust shortfall in flight,10,SG6,Icing at high flow,"Dry air, heated regulator",4,Full-flow cold discharge test,3,H,Manifold pressure vs command,95,72.0
+Line isolation valve (NC solenoid),4,Stuck open,Stuck thruster cannot be isolated,10,SG6,Seat contamination,"Filter, heated body",4,Contamination test,3,H,Pre-arm function test,99,60.0
+Line isolation valve (NC solenoid),4,Stuck closed,Lift group lost,10,SG6,"Coil open, seizure","Coil derating, dual-wound coil",6,Life test,3,H,Pre-arm function test,99,140.0
+Thruster valve (fast solenoid),10,Stuck open,Asymmetric thrust; latent SG1 barrier loss,10,SG1/SG6,"Armature wear, ice","Heated valve, dry air",6,Life and cold-cycle test,3,H,Line pressure vs command; pre-arm test,95,120.0
+Thruster valve (fast solenoid),10,Stuck closed,Roll authority lost (weak spot),10,SG6,"Coil open, seizure",Derated coil; individually controlled nozzles (TSR-17),6,"Life test, HIL",3,H,Pre-arm function test,95,280.0
+Thruster valve (fast solenoid),10,Slow response,Control degradation,7,SG6,"Wear, low voltage",Voltage regulation,6,Response-time test,4,H,Command vs pressure timing,90,120.0
+Thruster valve (fast solenoid),10,Seat leak,Small unwanted thrust; latent SG1,6,SG1,Seat erosion,Seat material selection,6,Leak test,4,M,Power-on leak-down,90,160.0
+Pressure transducer (strain gauge),8,Drift or stuck in range,Wrong reserve estimate; hop starts short of gas,9,SG6,"Ageing, thermal shock",Dissimilar dual sensors per group,6,Thermal cycling,3,H,Cross-check with second sensor and gas model,99,160.0
+Pressure transducer (strain gauge),8,Open or short,Signal lost,6,SG6,"Connector, wire bond",Automotive-grade connectors,6,Vibration test,3,M,Range check,99,160.0
+IMU (MEMS),3,Wrong output,Wrong attitude corrections,10,SG6,"MEMS stiction, shock",Three-way voting plus dissimilar monitor IMU,6,"Shock, vibration, HIL",3,H,Voting,99,120.0
+IMU (MEMS),3,Loss of output,One attitude source lost,6,SG6,"Supply, interface",Redundant supply,6,HIL,3,M,Timeout,99,180.0
+Thrust control unit (lockstep MCU),1,Wrong output,Erroneous thrust or valve command,10,SG1/SG6,Random hardware fault,"Lockstep cores, ECC memory",4,Fault injection,2,H,"Lockstep compare, monitor plausibility",99,60.0
+Thrust control unit (lockstep MCU),1,Loss of function in flight,No flight control until backup acts,10,SG6,"Reset, latch-up, clock",Fail-operational backup controller (TSR-22),4,HIL fault injection,3,H,Watchdog,99,90.0
+Safety monitor (dissimilar MCU),1,Wrong output (enable),One SG1 barrier lost,10,SG1,Random hardware fault,"Simple code, self-test, dissimilar part",4,Fault injection,2,H,"Inter-stage pressure, TCU cross-check",90,40.0
+Safety monitor (dissimilar MCU),1,Loss of function in flight,Master valve A hold lost,10,SG6,"Reset, supply",Hold-up energy store (TSR-21),4,HIL fault injection,3,H,TCU watchdog of monitor,99,60.0
+"High-side switch, master valve A / B",2,Short (stuck on),One SG1 barrier lost,10,SG1,Overstress,Derating,4,Fault injection,3,H,Output read-back,99,12.0
+"High-side switch, master valve A / B",2,Open,Master valve closes in flight,10,SG6,Bond failure,"Dual-wound coil, second driver (TSR-21)",4,HIL,3,H,Coil current,99,20.0
+Low-side valve driver,10,Short (valve on),Behaves as stuck-open valve,10,SG1/SG6,Overstress,"Derating, supply enable from monitor",4,Fault injection,3,H,Driver diagnostics,95,20.0
+Low-side valve driver,10,Open (valve off),Behaves as stuck-closed valve,10,SG6,Bond failure,Derating,4,Fault injection,3,H,Open-load detection,95,50.0
+"Arm-line harness, each channel",2,Short to battery,One SG1 barrier lost,10,SG1,Chafing,"Separate routing, protected conduit",3,"Harness review, vibration",4,L,Read-back,90,4.0
+Satellite and beacon receivers,2,False position or replayed beacon,Zone wrongly authorised (needs both),8,SG1,"Interference, spoofing","Two independent sources, signed beacon",4,Spoofing test,3,M,Cross-check with inertial data,90,30.0
+"Low-voltage supply, thrust domain",2,Loss in flight,Valves close; thrust lost,10,SG6,"Converter fault, connector","Two feeds, hold-up energy store (TSR-21)",4,HIL power-loss test,3,H,Voltage monitor,99,50.0

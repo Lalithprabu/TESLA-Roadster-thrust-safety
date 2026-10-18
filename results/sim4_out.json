@@ -1,0 +1,59 @@
+{
+  "min_fill_fraction_nominal": 0.864,
+  "A: no reserve check, cut on fault": {
+    "hops_refused_pct": 0.0,
+    "bad_per_flown_hop_pct": 31.57,
+    "bad_no_fault_pct": 21.24,
+    "bad_given_stuck_open_pct": 100.0,
+    "bad_given_leak_pct": 100.0,
+    "bad_given_stuck_closed_pct": 100.0,
+    "unsafe_attitude_per_flown_pct": 6.33,
+    "drift_p95_m": 2.34,
+    "n_flown": 12000,
+    "n_flown_stuck_open": 611,
+    "n_flown_leak": 579,
+    "n_flown_stuck_closed": 384
+  },
+  "B: reserve check, cut on fault": {
+    "hops_refused_pct": 79.1,
+    "bad_per_flown_hop_pct": 12.7,
+    "bad_no_fault_pct": 0.0,
+    "bad_given_stuck_open_pct": 100.0,
+    "bad_given_leak_pct": 100.0,
+    "bad_given_stuck_closed_pct": 100.0,
+    "unsafe_attitude_per_flown_pct": 5.47,
+    "drift_p95_m": 1.82,
+    "n_flown": 2504,
+    "n_flown_stuck_open": 121,
+    "n_flown_leak": 111,
+    "n_flown_stuck_closed": 86
+  },
+  "C: reserve check, isolate + recover": {
+    "hops_refused_pct": 79.1,
+    "bad_per_flown_hop_pct": 1.6,
+    "bad_no_fault_pct": 0.0,
+    "bad_given_stuck_open_pct": 3.3,
+    "bad_given_leak_pct": 4.5,
+    "bad_given_stuck_closed_pct": 36.0,
+    "unsafe_attitude_per_flown_pct": 0.88,
+    "drift_p95_m": 1.45,
+    "n_flown": 2504,
+    "n_flown_stuck_open": 121,
+    "n_flown_leak": 111,
+    "n_flown_stuck_closed": 86
+  },
+  "D: C with 11 kN lift groups": {
+    "hops_refused_pct": 79.1,
+    "bad_per_flown_hop_pct": 1.36,
+    "bad_no_fault_pct": 0.0,
+    "bad_given_stuck_open_pct": 0.0,
+    "bad_given_leak_pct": 5.4,
+    "bad_given_stuck_closed_pct": 32.6,
+    "unsafe_attitude_per_flown_pct": 0.88,
+    "drift_p95_m": 0.43,
+    "n_flown": 2504,
+    "n_flown_stuck_open": 121,
+    "n_flown_leak": 111,
+    "n_flown_stuck_closed": 86
+  }
+}

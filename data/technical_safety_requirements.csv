@@ -1,0 +1,24 @@
+id,requirement,asil,fsr,allocated_to,verification,evidence
+TSR-01,"Two normally closed master valves in series: valve A powered only by the safety monitor, valve B only by the thrust control unit",B(D) + B(D),FSR-1.1,"S4, S9, IF-01, IF-02",VER-01,Sim 7 FMEDA
+TSR-02,"Arming requires Track mode, a physical arm switch, zone authorisation from two independent sources, speed and wind within limits, belts fastened and a clear zone",D,"FSR-1.2, FSR-7.1","S8, S9, S10, IF-05, IF-09","VER-02, VER-20",
+TSR-03,A leak-down test of the master valves runs at every power-on; a failure locks out thrust,D,FSR-1.1,"S4, S8, S9",VER-01,Sim 7 FMEDA
+TSR-04,Thrust messages are authenticated; production cars have no remote thrust path,D,FSR-1.3,"S9, IF-03","VER-03, VER-21",TARA
+TSR-05,"Pressure is measured by two dissimilar sensors per gas group, with temperature compensation",D,"FSR-6.4, FSR-2.1","S3, S8, IF-07",VER-04,Sim 7 FMEA
+TSR-06,"COPVs meet a burst ratio of 2.25 or more and pass pressure-cycling, fire, drop and impact tests equivalent to UN GTR 13",Design standard,FSR-2.1,S3,VER-05,
+TSR-07,On crash detection all vessel valves close within 50 ms; venting only through thrust-neutral diffusers away from the cabin,D,FSR-2.2,"S3, S4, S11, IF-10",VER-06,
+TSR-08,"Loss of suction is detected from plenum pressure and speed and cornering limits apply within 100 ms, with a warning",C,FSR-4.1,"S6, S7, IF-08",VER-07,
+TSR-09,A stuck-open thruster valve is detected and its line isolated within 20 ms (hard ceiling 50 ms),B,"FSR-5.1, FSR-6.3","S4, S5, S9, IF-11",VER-08,"Sim 2, Sim 3"
+TSR-10,"A hop starts only if usable gas is at least 1.2 times the predicted need, corrected for mass and gas temperature; otherwise a lower manoeuvre is offered",B,FSR-6.1,"S3, S9",VER-09,Sim 4
+TSR-11,"If predicted gas at landing falls below the reserve mid-manoeuvre, recovery starts at once: level attitude first, then land",B,FSR-6.2,S9,VER-10,Sim 4
+TSR-12,"While airborne the safety monitor commands recovery instead of closing the master valves, unless thrust itself is the uncontainable fault",B,FSR-6.2,S9,VER-11,Sim 2
+TSR-13,Attitude comes from three IMUs with voting; the monitor checks it with a dissimilar sensor,B,FSR-6.4,"S8, IF-06",VER-12,
+TSR-14,External airbags arm only in Hop mode above 1.5 m and are disarmed by two independent signals on landing,B,FSR-8.1,S11,VER-13,Sim 5
+TSR-15,"After isolating any one lift group, the remaining torque-balanced groups lift at least 1.1 times maximum vehicle weight (about 10 kN per group)",B,FSR-6.3,S5,VER-14,"Sim 3, Sim 4"
+TSR-16,"Before every arming each thruster, line and master valve is cycled against a pressurised test volume; coverage of stuck-open and stuck-closed faults at least 99.9%",D,"FSR-1.1, FSR-6.3","S4, S5, S9",VER-15,"Sim 6, Sim 7"
+TSR-17,Any single stuck-closed nozzle leaves at least 50% of nominal roll-braking authority (individually controlled nozzles),B,FSR-6.3,"S5, S9",VER-16,Gap found (Sim 4)
+TSR-18,"COPVs, valves and seals are qualified to the lowest gas temperature of a full discharge, or discharge is limited to their qualified temperature",D,FSR-2.1,"S3, S4, S5",VER-17,Sim 1
+TSR-19,"Refill air is dried to a dew point below -40 C, checked at the coupling; otherwise the fill is refused",D,FSR-2.1,S2,VER-18,
+TSR-20,"The recovery planner chooses the upright attitude reachable with the least altitude loss, using the predicted stopping angle",B,FSR-6.2,S9,VER-19,Gap found (Sim 3)
+TSR-21,"In Hop mode no single loss of power, coil, switch or computer closes a master valve for at least 5 s (dual-wound coils, second driver, hold-up energy); closing in flight needs an explicit command",B,FSR-6.2,"S1, S4, S9",VER-22,Sim 7 FMEA
+TSR-22,Hop-mode control is fail-operational for at least 5 s: a backup attitude-hold and descent law on independent hardware takes over within 50 ms,B,FSR-6.2,S9,VER-23,Sim 7 FMEA
+TSR-23,Thruster and line valve commands are direct-wired or carried on two independent buses; a lost command opens nothing new,B,FSR-6.2,"S9, IF-03, IF-11",VER-24,Sim 7 FMEA

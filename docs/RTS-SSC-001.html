@@ -1,0 +1,4624 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><title>RTS-SSC-001 Roadster Thrust System</title><style>
+@page { size: A4; margin: 20mm 16mm 18mm 16mm; }
+html { font-family: Inter, 'DejaVu Sans', sans-serif; font-size: 9.6pt; color: #1b1b1a; line-height: 1.45; }
+body { margin: 0; }
+h1 { font-size: 17pt; margin: 0 0 8pt; padding-top: 2pt; break-before: page; color: #0b0b0b; letter-spacing: -0.01em; }
+h1:first-of-type { break-before: avoid; font-size: 22pt; margin-top: 30mm; }
+h2 { font-size: 12pt; margin: 16pt 0 5pt; color: #0b0b0b; break-after: avoid; }
+h3 { font-size: 10.5pt; margin: 12pt 0 4pt; break-after: avoid; }
+p, li { orphans: 3; widows: 3; }
+table { border-collapse: collapse; width: 100%; margin: 6pt 0 10pt; font-size: 8pt; line-height: 1.3; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th { background: #f0efeb; text-align: left; font-weight: 600; }
+th, td { border: 0.6pt solid #d6d4cd; padding: 3pt 4pt; vertical-align: top; }
+td:first-child { white-space: nowrap; }
+.toc-list, ul { padding-left: 14pt; }
+img { max-width: 100%; display: block; margin: 8pt auto 2pt; break-inside: avoid; }
+p:has(> img) { break-inside: avoid; break-after: avoid; margin: 0; }
+em { color: #52514e; }
+blockquote { margin: 10pt 0; padding: 6pt 10pt; border-left: 3pt solid #eb6834; background: #fdf3ee; }
+code, pre { font-family: 'DejaVu Sans Mono', monospace; font-size: 8pt; }
+pre { background: #f5f4f0; padding: 6pt 8pt; border-radius: 3pt; white-space: pre-wrap; }
+a { color: #2a78d6; text-decoration: none; }
+.toc { columns: 1; }
+.toc li { margin: 1pt 0; }
+</style></head><body><h1>Roadster Thrust System: System, Safety and Security Concept</h1>
+<p><strong>Document RTS-SSC-001 · Issue 3.0 · 18 October 2026 · Concept phase</strong></p>
+<p>An independent systems-engineering, functional-safety (ISO 26262), SOTIF (ISO 21448) and cybersecurity (ISO/SAE 21434) concept study of a cold-gas-thruster "hop" function on a road sports car, inspired by the Tesla Roadster reveal of 15 October 2026.</p>
+<blockquote>
+<p><strong>Disclaimer.</strong> Independent educational analysis. Not affiliated with, endorsed by or reviewed by Tesla, Inc. or SpaceX. Tesla's design is not public: every architecture, part, failure rate and number in this document is an assumption or an estimate derived from public reporting, registered in Appendix A. Nothing here describes the real vehicle, and nothing here is certification evidence. Tesla, Roadster and SpaceX are trademarks of their owners.</p>
+</blockquote>
+<h2>Document control</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Document</td>
+<td>RTS-SSC-001, System, Safety and Security Concept</td>
+</tr>
+<tr>
+<td>Issue</td>
+<td>3.0 (consolidated and independently reviewed)</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Concept phase; public release</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Lalith Prabu</td>
+</tr>
+<tr>
+<td>Prepared with</td>
+<td>AI assistance (Claude by Anthropic); author review before release</td>
+</tr>
+<tr>
+<td>Data sources of truth</td>
+<td><code>data/*.csv</code> (requirements and traceability), <code>results/</code> (simulation outputs)</td>
+</tr>
+<tr>
+<td>Licence</td>
+<td>Text, figures and tables CC BY 4.0; code MIT</td>
+</tr>
+</tbody>
+</table>
+<h2>Revision history</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Date</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.0</td>
+<td>18 Oct 2026</td>
+<td>Consolidated single document set. Added architecture decision record, assumptions register, requirements database with automated link check, independent review record. Updated E/E architecture for fail-operational hop control (TSR-21 to TSR-23).</td>
+</tr>
+<tr>
+<td>2.1</td>
+<td>17 Oct 2026</td>
+<td>Representative component FMEA and FMEDA, traceability chain, factor-scored TARA and attack tree.</td>
+</tr>
+<tr>
+<td>2.0</td>
+<td>16 Oct 2026</td>
+<td>Industry structure: operating domain, functional and E/E architecture, timing budget, ASIL decomposition, DFA, SOTIF acceptance, cybersecurity and V&amp;V. Corrected fill pressure 600 to 400 bar.</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td>16 Oct 2026</td>
+<td>First architecture and safety analysis.</td>
+</tr>
+</tbody>
+</table>
+<h2>How this document maps to the standards</h2>
+<table>
+<thead>
+<tr>
+<th>Chapter</th>
+<th>Work product</th>
+<th>Standard reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Executive summary</td>
+<td>—</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Decoded feature and public facts</td>
+<td>—</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Item definition, concept of operations, operating domain</td>
+<td>ISO 26262-3 cl. 5; ISO 21448 cl. 5</td>
+</tr>
+<tr>
+<td>4</td>
+<td>System architecture: logical, functional, E/E, interfaces, modes, timing, design decisions</td>
+<td>ISO 26262-4 cl. 6</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Performance and energy budget</td>
+<td>—</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Hazard analysis and risk assessment, safety goals</td>
+<td>ISO 26262-3 cl. 6</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Functional and technical safety concept</td>
+<td>ISO 26262-3 cl. 7; ISO 26262-4 cl. 6</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Safety analyses: FMEA, FMEDA, FTA, DFA, STPA</td>
+<td>ISO 26262-5 cl. 8–9; ISO 26262-9 cl. 7–8</td>
+</tr>
+<tr>
+<td>9</td>
+<td>SOTIF analysis</td>
+<td>ISO 21448 cl. 6–7</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Cybersecurity concept and TARA</td>
+<td>ISO/SAE 21434 cl. 9, 15, Annex G</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Verification and validation plan</td>
+<td>ISO 26262-4 cl. 7–8; ISO 21448 cl. 9–11</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Traceability</td>
+<td>ISO 26262-8 cl. 6</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Safety case, regulation, review record, open issues</td>
+<td>ISO 26262-2 cl. 6</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Simulation report</td>
+<td>Supporting evidence</td>
+</tr>
+<tr>
+<td>A–B</td>
+<td>Assumptions register, sources</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>Terms and abbreviations</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ASIL</td>
+<td>Automotive safety integrity level, A (lowest) to D (highest); B(D) means ASIL B after decomposition of a D goal</td>
+</tr>
+<tr>
+<td>CAL</td>
+<td>Cybersecurity assurance level (ISO/SAE 21434), 1 to 4</td>
+</tr>
+<tr>
+<td>COPV</td>
+<td>Carbon-fibre overwrapped pressure vessel</td>
+</tr>
+<tr>
+<td>DC</td>
+<td>Diagnostic coverage</td>
+</tr>
+<tr>
+<td>DFA</td>
+<td>Dependent failure analysis</td>
+</tr>
+<tr>
+<td>FHA</td>
+<td>Functional hazard assessment (aviation, ARP4761A)</td>
+</tr>
+<tr>
+<td>FIT</td>
+<td>Failures in time: one failure per 10⁹ hours</td>
+</tr>
+<tr>
+<td>FSR, TSR</td>
+<td>Functional and technical safety requirement</td>
+</tr>
+<tr>
+<td>FTTI</td>
+<td>Fault tolerant time interval: time from fault to hazard if nothing reacts</td>
+</tr>
+<tr>
+<td>HIL</td>
+<td>Hardware-in-the-loop testing</td>
+</tr>
+<tr>
+<td>SPFM, LFM, PMHF</td>
+<td>Single-point fault metric, latent fault metric, probabilistic metric for hardware failures</td>
+</tr>
+<tr>
+<td>SOTIF</td>
+<td>Safety of the intended functionality: hazards with nothing broken</td>
+</tr>
+<tr>
+<td>STPA</td>
+<td>System-theoretic process analysis</td>
+</tr>
+<tr>
+<td>TARA</td>
+<td>Threat analysis and risk assessment</td>
+</tr>
+<tr>
+<td>TCU</td>
+<td>Thrust control unit (the command-channel computer)</td>
+</tr>
+</tbody>
+</table>
+<h2 style="break-before: page">Contents</h2>
+
+<ul>
+<li>1. Executive summary</li>
+<li>2. Decoding the feature</li>
+<li>3. Item definition and concept of operations</li>
+<li>4. System architecture</li>
+<li>5. Performance and energy budget</li>
+<li>6. Hazard analysis and risk assessment</li>
+<li>7. Functional and technical safety concept</li>
+<li>8. Safety analyses</li>
+<li>9. SOTIF analysis</li>
+<li>10. Cybersecurity concept</li>
+<li>11. Verification and validation plan</li>
+<li>12. Traceability</li>
+<li>13. Safety case, regulation, review record and open issues</li>
+<li>14. Simulation report</li>
+<li>Appendix A. Assumptions register</li>
+<li>Appendix B. Sources</li>
+</ul>
+<h1>1. Executive summary</h1>
+<p>The Roadster's "flying" feature is a cold-gas thruster system developed with SpaceX, paired with a fan-driven suction system. It gives powered hops of a few seconds, not sustained flight. This study shows the concept can be made acceptably safe only with four architectural measures: two-channel arming with two master valves in series, a "recover, then cut" response to faults in flight, fail-operational control during a hop, and pre-flight checks of every valve and of the gas reserve.</p>
+<h2>Key findings</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>It is a hop, not a flight: about 244 kg of air at about 400 bar holds a 1,850 kg car in a hover for 6.7 s, and one reference hop uses 55% of it</td>
+<td>Sim 1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>The gas storage is the largest stored-energy hazard: about 60 MJ of burst energy (about 14 kg TNT), and a full discharge can chill the gas towards −130 °C</td>
+<td>Sim 1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Cutting all gas mid-air is always fatal at hop heights. Isolating only the failed line, then recovering, cut bad outcomes after a stuck-open valve from 100% to 0–3%</td>
+<td>Sims 2, 4</td>
+</tr>
+<tr>
+<td>4</td>
+<td>The fault tolerant time interval for a stuck-open valve is about 200 ms; detection and isolation are budgeted at 20 ms</td>
+<td>Sim 3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A stuck-closed valve during the roll (1.10–1.95 s) almost always ends badly; the same fault outside the roll is always safe</td>
+<td>Sim 4, viewer</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Valves that close on power loss are safe on the ground but drop the car in the air. Three requirements (TSR-21 to TSR-23) make hop control fail-operational</td>
+<td>Component FMEA</td>
+</tr>
+<tr>
+<td>7</td>
+<td>SG1 (no unintended thrust) meets the ASIL D hardware targets with representative rates: SPFM 100%, LFM 98.7%, PMHF 0.006 FIT. Common-cause faults dominate what risk remains</td>
+<td>Sim 7</td>
+</tr>
+<tr>
+<td>8</td>
+<td>A faked track zone is the one attack path that defeats both channels at once, because both trust the same zone data; an independent zone check closes it</td>
+<td>TARA, attack tree</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Per-hop risk of a bad landing from faults is 3.3 × 10⁻⁷ against a proposed 10⁻⁷ target, and the SOTIF residual is bounded only at 1.4 × 10⁻³ per hop</td>
+<td>Sims 4, 6</td>
+</tr>
+<tr>
+<td>10</td>
+<td>There is no regulatory path yet: Tesla lists the Rocket trim as not approved for public road use</td>
+<td>Chapter 13</td>
+</tr>
+</tbody>
+</table>
+<h2>Status at a glance</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Count</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hazardous events</td>
+<td>11</td>
+<td>Rated; 3 at ASIL D</td>
+</tr>
+<tr>
+<td>Safety goals</td>
+<td>8</td>
+<td>3 ASIL D, 2 ASIL C, 3 ASIL B</td>
+</tr>
+<tr>
+<td>Functional safety requirements</td>
+<td>14</td>
+<td>13 in scope; 1 allocated to the steer-by-wire item</td>
+</tr>
+<tr>
+<td>Technical safety requirements</td>
+<td>23</td>
+<td>All allocated and with a verification method</td>
+</tr>
+<tr>
+<td>Verification items</td>
+<td>25</td>
+<td>11 with analysis or simulation evidence, 2 showing a gap, 12 not started</td>
+</tr>
+<tr>
+<td>Failure modes analysed</td>
+<td>31 component-level</td>
+<td>23 at action priority H</td>
+</tr>
+<tr>
+<td>Threat scenarios</td>
+<td>9</td>
+<td>All at risk value 3 or below after 13 controls</td>
+</tr>
+<tr>
+<td>Traceability check</td>
+<td>Safety and security chains, both directions</td>
+<td>Passes (<code>tools/check_traceability.py</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2>What would block release</h2>
+<ol>
+<li>SOTIF residual risk is not yet demonstrated (G3 in the safety case).</li>
+<li>Stuck-closed valve authority (TSR-17) and the recovery planner (TSR-20) show gaps in simulation.</li>
+<li>No physical test evidence exists; every number rests on the assumptions in Appendix A.</li>
+</ol>
+<h1>2. Decoding the feature</h1>
+<p>Tesla has no single product name for the flying feature. It appears under four names, plus a separate suction system that does the upside-down driving.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>What it refers to</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SpaceX package</td>
+<td>Musk's 2018 name for an option with about 10 small thrusters arranged around the car</td>
+<td>Public since June 2018 [B8]</td>
+</tr>
+<tr>
+<td>A71</td>
+<td>Reported internal code name for the Tesla–SpaceX cold-gas thruster system</td>
+<td>Reported; not confirmed by Tesla [B6]</td>
+</tr>
+<tr>
+<td>Thrust trim</td>
+<td>"Race ready", 2 seats, rear-mounted cold-gas thrusters for 0–60 mph under 1 s</td>
+<td>$250,000 reservation [B1, B2]</td>
+</tr>
+<tr>
+<td>Rocket trim</td>
+<td>"Air ready", 1 seat, 10 thrusters around the car for forward, upward and rotational moves; Tesla says it "can fly"</td>
+<td>Invite only; not approved for public road use [B2]</td>
+</tr>
+<tr>
+<td>Multi-mode suction system</td>
+<td>Fans and a ground-sealing skirt that pull air from under the car, strong enough to hold it upside down when stationary</td>
+<td>All three trims [B2]</td>
+</tr>
+</tbody>
+</table>
+<h2>What Tesla has disclosed</h2>
+<ul>
+<li>10 thrusters fed by 600 litres of rechargeable compressed air (L. Moravy) [B1]; 250 kg of compressed gas reported by one outlet [B3].</li>
+<li>Every usable void in the car is packed with carbon-fibre overwrapped pressure vessels (COPVs) [B1].</li>
+<li>All-electric actuators make micro-adjustments to stabilise the car in flight [B2].</li>
+<li>Suction allows cornering up to 2G [B3]. 0–60 mph under 1.6 s (Performance), under 0.9 s (Thrust), under 0.59 s (Rocket) [B4, B5].</li>
+<li>Steer-by-wire yoke, Track Mode, magnesium, titanium and carbon-fibre construction [B2].</li>
+<li>The demonstration car was remotely operated with nobody inside. It drove up an inverted ramp, spun and landed, then cleared a Cybercab, Cybertruck, Semi, Model Y and Model 3 [B1].</li>
+<li>Production is planned for 2028 [B1, B2].</li>
+</ul>
+<p>Everything else in this document is an assumption, numbered A-01 to A-16 in Appendix A.</p>
+<h1>3. Item definition and concept of operations</h1>
+<h2>3.1 Item and boundary</h2>
+<p>The item is the thrust and suction function: gas supply and storage, distribution, thruster array, suction, the sensing and computers that control them, the arming interface and the protection measures specific to it (subsystems S2–S6 and S8–S11, with their links to S1 and S7). The vehicle platform, steering and airbags are outside the item and appear as interfaces. Thrust functions are allowed only inside a bounded operating domain; everywhere else the car is in Road-safe mode, where thrust is physically impossible.</p>
+<p><img alt="System context" src="figures/F01_system_context.png" /></p>
+<p><em>Figure 1. System context: the item, its eight actors and the only two that can contribute to enabling thrust.</em></p>
+<h2>3.2 Use cases</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Use case</th>
+<th>Who</th>
+<th>Mode</th>
+<th>Trim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UC1</td>
+<td>Normal road driving</td>
+<td>Owner</td>
+<td>Road-safe</td>
+<td>All</td>
+</tr>
+<tr>
+<td>UC2</td>
+<td>Track driving with suction</td>
+<td>Owner</td>
+<td>Track</td>
+<td>All</td>
+</tr>
+<tr>
+<td>UC3</td>
+<td>Straight-line boost launch</td>
+<td>Owner</td>
+<td>Boost</td>
+<td>Thrust, Rocket</td>
+</tr>
+<tr>
+<td>UC4</td>
+<td>Hop or roll manoeuvre</td>
+<td>Invited pilot</td>
+<td>Hop</td>
+<td>Rocket</td>
+</tr>
+<tr>
+<td>UC5</td>
+<td>Refill the air tanks</td>
+<td>Fill-station operator</td>
+<td>Road-safe</td>
+<td>Thrust, Rocket</td>
+</tr>
+<tr>
+<td>UC6</td>
+<td>Service, inspect and vent the tanks</td>
+<td>Technician</td>
+<td>Vent and maintain</td>
+<td>Thrust, Rocket</td>
+</tr>
+<tr>
+<td>UC7</td>
+<td>Crash in any mode</td>
+<td>—</td>
+<td>Crash</td>
+<td>All</td>
+</tr>
+<tr>
+<td>UC8</td>
+<td>Remote-operated test (development only)</td>
+<td>Test engineer</td>
+<td>Hop</td>
+<td>Prototype</td>
+</tr>
+</tbody>
+</table>
+<h2>3.3 Operating domain for thrust functions</h2>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Allowed</th>
+<th>Monitored by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Location</td>
+<td>Authorised track or closed site inside a geofence</td>
+<td>Satellite positioning plus signed track beacon</td>
+</tr>
+<tr>
+<td>People</td>
+<td>Nobody inside the clear zone (proposed 50 m for Hop, 20 m for Boost)</td>
+<td>Cameras and site procedure</td>
+</tr>
+<tr>
+<td>Surface</td>
+<td>Dry, sealed, paved; no loose gravel</td>
+<td>Suction plenum pressure, cameras</td>
+</tr>
+<tr>
+<td>Wind</td>
+<td>Sustained under 8 m/s, gusts under 12 m/s</td>
+<td>Site anemometer feed</td>
+</tr>
+<tr>
+<td>Temperature</td>
+<td>−10 to +40 °C ambient</td>
+<td>Vehicle sensors</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td>No rain, snow or ice; daylight</td>
+<td>Rain sensor, site procedure</td>
+</tr>
+<tr>
+<td>Occupants</td>
+<td>Belted; harness and helmet in Rocket trim</td>
+<td>Seat sensors</td>
+</tr>
+<tr>
+<td>Vehicle state</td>
+<td>Gas above reserve; all pre-arm checks passed; no active faults</td>
+<td>Mode manager</td>
+</tr>
+<tr>
+<td>Manoeuvre</td>
+<td>Hop apex up to 6 m; Boost in a straight line only</td>
+<td>Trajectory planner</td>
+</tr>
+</tbody>
+</table>
+<h2>3.4 Foreseeable misuse</h2>
+<ul>
+<li>Firing thrusters on public roads or in car parks.</li>
+<li>Spoofing or disabling the geofence or beacon (see TS3, TS4 in chapter 10).</li>
+<li>Refilling with wet air, oxygen-enriched air or another gas at an unapproved station.</li>
+<li>Carrying a passenger in the single-seat Rocket trim, or loose cargo during a hop.</li>
+<li>Letting spectators stand inside the clear zone.</li>
+</ul>
+<h1>4. System architecture</h1>
+<p>The architecture rests on two rules. On the ground, thrust is impossible unless two independent channels agree, so the default state is gas isolated and no thrust. In the air, no single fault may remove thrust, so the car can always level itself and land. The rest of this chapter shows how the subsystems, functions, electronics, interfaces and modes deliver both rules, and why each major design decision was taken. This is a reference architecture inferred from public disclosures; Tesla has not published its own.</p>
+<h2>4.1 Architecture principles</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Principle</th>
+<th>Driven by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>Fail closed on the ground: every gas valve is normally closed and needs active power to open</td>
+<td>SG1, SG2</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>Fail operational in the air: during a hop no single fault closes the gas or stops control for at least 5 s</td>
+<td>SG6</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Two independent, dissimilar channels must both agree before gas can reach a nozzle</td>
+<td>SG1</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>The thrust domain is isolated: nothing outside it can command thrust</td>
+<td>SG1, CG1</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>Attitude before altitude: on any in-flight fault, level the car first, then descend</td>
+<td>SG6</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>Never start what cannot be finished after one fault (gas reserve, lift margin)</td>
+<td>SG6</td>
+</tr>
+</tbody>
+</table>
+<h2>4.2 Logical architecture</h2>
+<p><img alt="System architecture" src="figures/F03_system_architecture.png" /></p>
+<p><em>Figure 2. Logical architecture: eleven subsystems in six layers (energy, gas, effectors, sensing, control, protection), with the gas path and the hardwired arm line.</em></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Subsystem</th>
+<th>Content</th>
+<th>Technical safety requirements allocated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>High-voltage energy</td>
+<td>Battery pack and DC-DC converters powering compressor, fans, valves and compute</td>
+<td>TSR-21</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>Gas supply</td>
+<td>Onboard compressor, air dryer, ground fill port, check valves</td>
+<td>TSR-19</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>Gas storage</td>
+<td>COPV bank (about 600 L at 400 bar), per-vessel isolation and relief, pressure and temperature sensing</td>
+<td>TSR-05, TSR-06, TSR-07, TSR-10, TSR-18</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>Distribution</td>
+<td>Two normally closed master valves in series, regulators, manifold, line valves</td>
+<td>TSR-01, TSR-03, TSR-07, TSR-09, TSR-16, TSR-18, TSR-21</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Thruster array</td>
+<td>Rear nozzles (Thrust) or 10 perimeter nozzles (Rocket) with fast electric valves and heaters</td>
+<td>TSR-09, TSR-15, TSR-16, TSR-17, TSR-18</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>Suction</td>
+<td>Multi-mode fans, ground-sealing skirt, plenum pressure sensors</td>
+<td>TSR-08</td>
+</tr>
+<tr>
+<td>S7</td>
+<td>Chassis</td>
+<td>Motors, brakes, steer-by-wire, active suspension, active aero</td>
+<td>TSR-08</td>
+</tr>
+<tr>
+<td>S8</td>
+<td>Sensing</td>
+<td>Three IMUs, altimeters, satellite positioning, wheel speeds, cameras</td>
+<td>TSR-02, TSR-03, TSR-05, TSR-13</td>
+</tr>
+<tr>
+<td>S9</td>
+<td>Control compute</td>
+<td>Mode manager, vehicle dynamics controller, thrust control unit, independent safety monitor</td>
+<td>TSR-01, TSR-02, TSR-03, TSR-04, TSR-09, TSR-10, TSR-11, TSR-12, TSR-16, TSR-17, TSR-20, TSR-21, TSR-22, TSR-23</td>
+</tr>
+<tr>
+<td>S10</td>
+<td>HMI and arming</td>
+<td>Yoke, mode selector, physical arm switch, displays and alarms</td>
+<td>TSR-02</td>
+</tr>
+<tr>
+<td>S11</td>
+<td>Protection</td>
+<td>Restraints, rollover structure, external airbags, thrust-neutral emergency venting</td>
+<td>TSR-07, TSR-14</td>
+</tr>
+</tbody>
+</table>
+<h2>4.3 Functional architecture</h2>
+<p>Fourteen functions make up the item. Each is allocated to a subsystem and inherits the highest ASIL of the safety goals it supports.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Function</th>
+<th>Allocated to</th>
+<th>Supports</th>
+<th>ASIL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>Capture driver intent and arming consent</td>
+<td>S10</td>
+<td>SG1</td>
+<td>D</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Confirm zone authorisation from two independent sources</td>
+<td>S8, S9</td>
+<td>SG1, SG7</td>
+<td>D</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>Measure gas state and predict usable reserve</td>
+<td>S3, S9</td>
+<td>SG2, SG6</td>
+<td>D</td>
+</tr>
+<tr>
+<td>F4</td>
+<td>Plan the manoeuvre and check it can be finished after one fault</td>
+<td>S9</td>
+<td>SG6</td>
+<td>B</td>
+</tr>
+<tr>
+<td>F5</td>
+<td>Estimate attitude, height and position</td>
+<td>S8</td>
+<td>SG6</td>
+<td>B</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Compute flight control laws</td>
+<td>S9</td>
+<td>SG5, SG6</td>
+<td>C</td>
+</tr>
+<tr>
+<td>F7</td>
+<td>Allocate thrust to nozzles, torque first</td>
+<td>S9</td>
+<td>SG5, SG6</td>
+<td>C</td>
+</tr>
+<tr>
+<td>F8</td>
+<td>Actuate thruster valves</td>
+<td>S5</td>
+<td>SG1, SG5</td>
+<td>D</td>
+</tr>
+<tr>
+<td>F9</td>
+<td>Isolate gas (master and line valves)</td>
+<td>S4, S9</td>
+<td>SG1, SG2, SG6</td>
+<td>D</td>
+</tr>
+<tr>
+<td>F10</td>
+<td>Monitor, arbitrate and command recovery; run the backup hop law</td>
+<td>S9</td>
+<td>SG1, SG6</td>
+<td>D</td>
+</tr>
+<tr>
+<td>F11</td>
+<td>Generate downforce</td>
+<td>S6</td>
+<td>SG4</td>
+<td>C</td>
+</tr>
+<tr>
+<td>F12</td>
+<td>Protect occupants (restraints, external airbags)</td>
+<td>S11</td>
+<td>SG8</td>
+<td>B</td>
+</tr>
+<tr>
+<td>F13</td>
+<td>Store and refill gas</td>
+<td>S2, S3</td>
+<td>SG2</td>
+<td>D</td>
+</tr>
+<tr>
+<td>F14</td>
+<td>Vent gas without net thrust</td>
+<td>S3, S4</td>
+<td>SG2</td>
+<td>D</td>
+</tr>
+</tbody>
+</table>
+<h2>4.4 E/E and software architecture</h2>
+<p><img alt="E/E architecture" src="figures/F04_ee_architecture.png" /></p>
+<p><em>Figure 3. E/E architecture: two channels each own one of the two master valves in series; the monitor also owns the valve-driver supply, the hold-up store and the backup hop law.</em></p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Command channel</th>
+<th>Monitor channel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Computer</td>
+<td>Thrust control unit: lockstep multicore microcontroller</td>
+<td>Independent safety monitor: dissimilar microcontroller from a different supplier</td>
+</tr>
+<tr>
+<td>Software</td>
+<td>Partitioned real-time OS: control laws, allocation, recovery planner, diagnostics; separate logging partition</td>
+<td>Small bare-metal program: envelope checks, arm logic, recovery command, backup attitude-hold and descent law</td>
+</tr>
+<tr>
+<td>Sensors</td>
+<td>Two IMUs, one pressure sensor per gas group, altimeters</td>
+<td>Own IMU of a different technology, own pressure sensor per group</td>
+</tr>
+<tr>
+<td>Gas valves owned</td>
+<td>Master valve B, line and thruster valves (direct-wired)</td>
+<td>Master valve A (with hold-up store), enable of all valve-driver supplies</td>
+</tr>
+<tr>
+<td>Power</td>
+<td>Primary low-voltage feed</td>
+<td>Secondary feed with local buffer</td>
+</tr>
+<tr>
+<td>ASIL after decomposition</td>
+<td>B(D) for SG1; C for SG5; B for SG6</td>
+<td>B(D) for SG1; B for SG6 recovery and backup control</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ASIL decomposition of SG1.</strong> SG1 (ASIL D) is decomposed into the command channel at ASIL B(D) and the monitor channel at ASIL B(D). The decomposition is valid only if the dependent failure analysis (section 8.5) shows the channels are sufficiently independent; the FMEDA in section 8.3 shows common cause is the dominant residual, which is why that analysis is decisive.</p>
+<p><strong>Network.</strong> Thrust messages run on a private, authenticated bus between the two channels. The vehicle network can send only a mode request, zone data and the crash signal, through a filtering gateway. No cellular, Wi-Fi or diagnostic path reaches the thrust domain in production.</p>
+<p><strong>Fail-safe and fail-operational hardware.</strong> Every gas valve is normally closed and spring-return, so loss of power on the ground always closes it (P1). In Hop mode, dual-wound coils, a second driver per master valve and a local hold-up energy store keep the master valves open through any single loss for at least 5 s, and closing them in flight takes an explicit command (P2, TSR-21).</p>
+<h2>4.5 Interfaces</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Signal</th>
+<th>From → to</th>
+<th>Type</th>
+<th>Rate</th>
+<th>Max latency</th>
+<th>ASIL</th>
+<th>Protection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IF-01</td>
+<td>Arm enable A</td>
+<td>Safety monitor → master valve A switch</td>
+<td>Hardwired, energise-to-open</td>
+<td>Continuous</td>
+<td>5 ms to close</td>
+<td>B(D)</td>
+<td>Dedicated wire, read-back, short detection</td>
+</tr>
+<tr>
+<td>IF-02</td>
+<td>Arm enable B</td>
+<td>Thrust control unit → master valve B switch</td>
+<td>Hardwired, energise-to-open</td>
+<td>Continuous</td>
+<td>5 ms to close</td>
+<td>B(D)</td>
+<td>As IF-01</td>
+</tr>
+<tr>
+<td>IF-03</td>
+<td>Thrust command</td>
+<td>Thrust control unit → valve drivers</td>
+<td>Direct-wired, or two independent buses (TSR-23)</td>
+<td>1 kHz</td>
+<td>2 ms</td>
+<td>C</td>
+<td>Counter, CRC, timeout, authentication</td>
+</tr>
+<tr>
+<td>IF-04</td>
+<td>Driver enable</td>
+<td>Safety monitor → valve-driver supply</td>
+<td>Hardwired</td>
+<td>Continuous</td>
+<td>5 ms</td>
+<td>B(D)</td>
+<td>Read-back</td>
+</tr>
+<tr>
+<td>IF-05</td>
+<td>Zone authorisation</td>
+<td>Positioning and beacon → mode manager</td>
+<td>Vehicle bus via gateway</td>
+<td>10 Hz</td>
+<td>200 ms</td>
+<td>D (two sources)</td>
+<td>Two sources must agree; signed beacon; independent check in the monitor (CC-13)</td>
+</tr>
+<tr>
+<td>IF-06</td>
+<td>Attitude and rates</td>
+<td>IMUs → both computers</td>
+<td>Private bus or direct SPI</td>
+<td>1 kHz</td>
+<td>2 ms</td>
+<td>B</td>
+<td>Three-way voting, plausibility</td>
+</tr>
+<tr>
+<td>IF-07</td>
+<td>Gas pressure and temperature</td>
+<td>Sensors → both computers</td>
+<td>Analogue or private bus</td>
+<td>500 Hz</td>
+<td>5 ms</td>
+<td>D</td>
+<td>Two dissimilar sensors per group</td>
+</tr>
+<tr>
+<td>IF-08</td>
+<td>Suction plenum pressure</td>
+<td>Sensors → vehicle dynamics controller</td>
+<td>Vehicle bus</td>
+<td>200 Hz</td>
+<td>10 ms</td>
+<td>C</td>
+<td>Range and rate checks</td>
+</tr>
+<tr>
+<td>IF-09</td>
+<td>Mode request</td>
+<td>HMI → mode manager</td>
+<td>Vehicle bus via gateway</td>
+<td>Event</td>
+<td>50 ms</td>
+<td>D</td>
+<td>Physical arm switch plus two-step confirm</td>
+</tr>
+<tr>
+<td>IF-10</td>
+<td>Crash signal</td>
+<td>Airbag controller → both computers</td>
+<td>Hardwired plus bus</td>
+<td>Event</td>
+<td>10 ms</td>
+<td>D</td>
+<td>Redundant paths</td>
+</tr>
+<tr>
+<td>IF-11</td>
+<td>Line isolation command</td>
+<td>Thrust control unit → line valves</td>
+<td>Direct-wired</td>
+<td>Event</td>
+<td>20 ms</td>
+<td>B</td>
+<td>Read-back of valve position</td>
+</tr>
+</tbody>
+</table>
+<h2>4.6 Operating modes</h2>
+<p><img alt="Operating modes" src="figures/F05_operating_modes.png" /></p>
+<p><em>Figure 4. Operating modes: thrusters can fire only in Boost and Hop, entered only from Thrust-armed; any fault leads to recovery.</em></p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Thrust</th>
+<th>Entry conditions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Road-safe</td>
+<td>Physically impossible: master valves unpowered</td>
+<td>Default at power-on and on public roads</td>
+</tr>
+<tr>
+<td>Track</td>
+<td>No; suction allowed</td>
+<td>Driver request inside an authorised track zone</td>
+</tr>
+<tr>
+<td>Thrust-armed</td>
+<td>Ready, not firing</td>
+<td>Track mode, physical arm switch, gas reserve check passed, clear zone confirmed</td>
+</tr>
+<tr>
+<td>Boost</td>
+<td>Rear thrusters</td>
+<td>Armed, wheels on ground, straight-line launch</td>
+</tr>
+<tr>
+<td>Hop</td>
+<td>Perimeter thrusters</td>
+<td>Armed, Rocket trim, manoeuvre passes the reserve and lift-margin checks</td>
+</tr>
+<tr>
+<td>Abort and recover</td>
+<td>Remaining gas used to level the car, then land</td>
+<td>Any fault during Boost or Hop</td>
+</tr>
+<tr>
+<td>Vent and maintain</td>
+<td>No; tanks emptied through diffusers</td>
+<td>Service, or a fault that needs gas removed</td>
+</tr>
+<tr>
+<td>Crash</td>
+<td>No; all vessel valves closed</td>
+<td>Crash sensors fire, in any mode</td>
+</tr>
+</tbody>
+</table>
+<h2>4.7 Timing budget</h2>
+<p>The tightest timing is the stuck-open valve in flight: the FTTI is about 200 ms with 9 kN lift groups (Sim 3), against a 20 ms detection-to-isolation budget. For SG1 the safe state is held continuously, so no reaction time applies.</p>
+<table>
+<thead>
+<tr>
+<th>Goal</th>
+<th>Fault</th>
+<th>FTTI</th>
+<th>Detection</th>
+<th>Decision</th>
+<th>Actuation</th>
+<th>Budget</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SG6</td>
+<td>Stuck-open thruster valve in flight</td>
+<td>200 ms</td>
+<td>10 ms (line pressure vs command, IMU residual)</td>
+<td>2 ms</td>
+<td>8 ms line valve closes</td>
+<td>20 ms (ceiling 50 ms)</td>
+<td>Sim 3</td>
+</tr>
+<tr>
+<td>SG6</td>
+<td>Leak or pressure loss in flight</td>
+<td>Depends on leak rate</td>
+<td>20 ms (pressure decay vs model)</td>
+<td>2 ms</td>
+<td>Next control cycle</td>
+<td>25 ms</td>
+<td>Sim 4</td>
+</tr>
+<tr>
+<td>SG6</td>
+<td>Thrust control unit lost in flight</td>
+<td>Under 200 ms (estimate)</td>
+<td>10 ms (watchdog)</td>
+<td>5 ms</td>
+<td>Backup law takes over</td>
+<td>50 ms</td>
+<td>TSR-22</td>
+</tr>
+<tr>
+<td>SG5</td>
+<td>Asymmetric thrust in launch</td>
+<td>About 100 ms (estimate)</td>
+<td>5 ms (yaw rate vs model)</td>
+<td>1 ms</td>
+<td>8 ms master valve closes</td>
+<td>15 ms</td>
+<td>Estimate</td>
+</tr>
+<tr>
+<td>SG4</td>
+<td>Suction loss at high cornering load</td>
+<td>About 150 ms (estimate)</td>
+<td>10 ms (plenum pressure)</td>
+<td>5 ms</td>
+<td>Speed and cornering limits</td>
+<td>100 ms</td>
+<td>Estimate</td>
+</tr>
+<tr>
+<td>SG2</td>
+<td>Over-pressure while refilling</td>
+<td>Seconds</td>
+<td>100 ms</td>
+<td>10 ms</td>
+<td>Stop fill; mechanical relief as backup</td>
+<td>1 s</td>
+<td>Estimate</td>
+</tr>
+</tbody>
+</table>
+<p>Loop rates: attitude control and allocation 1 kHz; monitor envelope checks 1 kHz; mode manager 100 Hz; zone authorisation 10 Hz.</p>
+<h2>4.8 Architecture decision record</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Decision</th>
+<th>Alternatives considered</th>
+<th>Rationale</th>
+<th>Consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AD-01</td>
+<td>Two normally closed master valves in series, each powered by a different channel</td>
+<td>One master valve with redundant drivers</td>
+<td>Enables SG1 decomposition into B(D) + B(D); no single valve or driver fault releases gas</td>
+<td>Extra valve mass and pressure drop; leak-down test needed to keep faults from going latent</td>
+</tr>
+<tr>
+<td>AD-02</td>
+<td>Dissimilar safety monitor from a different supplier</td>
+<td>Second identical lockstep computer</td>
+<td>Reduces common-cause faults, the dominant residual in the FMEDA</td>
+<td>Two code bases and tool chains to maintain</td>
+</tr>
+<tr>
+<td>AD-03</td>
+<td>Recover, then cut, in flight</td>
+<td>Cut all gas on any fault</td>
+<td>Sim 2: cutting mid-roll lands the car on its roof; recovery lands it upright</td>
+<td>Monitor logic must know the flight phase; cutting stays the safe state on the ground</td>
+</tr>
+<tr>
+<td>AD-04</td>
+<td>Fail-operational hop control: hold-up store, dual-wound coils, backup law</td>
+<td>Rely on fail-closed valves</td>
+<td>Component FMEA: loss of power or a computer mid-hop otherwise drops the car</td>
+<td>More hardware in the monitor channel; must not weaken SG1 on the ground</td>
+</tr>
+<tr>
+<td>AD-05</td>
+<td>Isolated thrust domain behind an allowlist gateway</td>
+<td>Thrust functions on the shared vehicle network</td>
+<td>Removes remote attack paths to a severe damage scenario</td>
+<td>Updates to the thrust domain only with tanks empty and car present</td>
+</tr>
+<tr>
+<td>AD-06</td>
+<td>Gas split into at least two vessel groups with own isolation valves</td>
+<td>One manifolded bank</td>
+<td>A leak or stuck valve costs part of the reserve, not all of it</td>
+<td>More valves and sensors</td>
+</tr>
+<tr>
+<td>AD-07</td>
+<td>Thrust-neutral emergency venting through paired diffusers</td>
+<td>Single vent</td>
+<td>Venting must not push the car, especially after a crash</td>
+<td>Packaging of opposed diffusers</td>
+</tr>
+<tr>
+<td>AD-08</td>
+<td>Reserve check before every manoeuvre, offering a lower manoeuvre instead of refusing</td>
+<td>Fixed minimum fill</td>
+<td>Sim 4: without it, 21% of fault-free random hops starve</td>
+<td>Availability cost at low fill</td>
+</tr>
+<tr>
+<td>AD-09</td>
+<td>Monitor confirms the zone independently (inertial dead-reckoning from the last trusted beacon fix)</td>
+<td>Both channels use the same zone data</td>
+<td>Attack tree: a faked zone otherwise defeats both channels at once</td>
+<td>Beacon infrastructure must sign fixes</td>
+</tr>
+</tbody>
+</table>
+<h1>5. Performance and energy budget</h1>
+<p>The budget turns the disclosed figures into the physical limits every later chapter depends on. All values come from Sim 1 (chapter 14) using the assumptions in Appendix A; the most sensitive is the fill pressure (A-05), which Tesla has not disclosed.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Value</th>
+<th>How it is obtained</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gas volume</td>
+<td>600 L</td>
+<td>Disclosed [B1]</td>
+</tr>
+<tr>
+<td>Fill pressure</td>
+<td>About 400 bar</td>
+<td>Assumed (A-05); 600 bar would need a stronger vessel class than reported</td>
+</tr>
+<tr>
+<td>Gas mass at fill</td>
+<td>About 244 kg</td>
+<td>Real-gas density at 400 bar, 293 K (compressibility Z ≈ 1.17); consistent with the 250 kg figure in [B3]</td>
+</tr>
+<tr>
+<td>Weight to hold in a hover</td>
+<td>About 18.1 kN</td>
+<td>1,850 kg vehicle (A-01)</td>
+</tr>
+<tr>
+<td>Specific impulse of the jets</td>
+<td>69 s at fill, falling to 48 s as the gas cools</td>
+<td>Ideal nozzle expansion of air from the regulated supply</td>
+</tr>
+<tr>
+<td>Hover endurance, full tanks</td>
+<td>6.7 s</td>
+<td>Adiabatic blowdown until supply pressure falls below the regulator minimum</td>
+</tr>
+<tr>
+<td>Gas left unusable at the end</td>
+<td>About 40 kg</td>
+<td>Tank pressure falls to about 28 bar</td>
+</tr>
+<tr>
+<td>Gas temperature at the end of a full discharge</td>
+<td>About 142 K (−131 °C)</td>
+<td>Adiabatic expansion in the tanks</td>
+</tr>
+<tr>
+<td>Reference hop (4.5 m apex, 360° roll, soft landing)</td>
+<td>134 kg, 4.15 s, 55% of the fill</td>
+<td>Sim 1, Sim 2</td>
+</tr>
+<tr>
+<td>Minimum fill to start the reference hop with a 1.2 reserve factor</td>
+<td>86%</td>
+<td>Sim 4</td>
+</tr>
+<tr>
+<td>Launch, 0–60 mph in 0.9 s (Thrust trim)</td>
+<td>32–46 kg of gas</td>
+<td>Thrust needed beyond tyre grip, 13–19% of the fill</td>
+</tr>
+<tr>
+<td>Launch, 0–60 mph in 0.59 s (Rocket trim)</td>
+<td>46–67 kg of gas</td>
+<td>19–27% of the fill</td>
+</tr>
+<tr>
+<td>Stored energy if a full bank bursts</td>
+<td>About 60 MJ (about 14 kg of TNT)</td>
+<td>Isentropic expansion energy of the stored gas</td>
+</tr>
+<tr>
+<td>Energy to refill, ideal</td>
+<td>About 34 kWh</td>
+<td>Isothermal compression; a real compressor needs two to three times more</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What the budget means for the architecture.</strong></p>
+<ol>
+<li><em>It is a hop, not a flight.</em> A full bank gives under seven seconds of hover, and one reference hop uses more than half of it. There is no gas for a second attempt, so the reserve check (TSR-10) and recovery on the remaining gas (TSR-11) are essential, not optional.</li>
+<li><em>The vessels are a stored-energy hazard that can be released in milliseconds</em>, unlike the battery's chemical energy, which is released over seconds to minutes. SG2 is ASIL D for this reason, and vessel placement, shielding and thrust-neutral venting (AD-07) are architecture decisions, not packaging details.</li>
+<li><em>Cold is a design load.</em> Valves, seals and liners must work at the coldest gas temperature of a full discharge (TSR-18), and refill air must be dry (TSR-19), or ice can jam a valve when it is needed most.</li>
+<li><em>The car cannot refill itself quickly.</em> An on-board compressor powered from the traction battery would take far longer than a station refill; the operating concept assumes a fill station at the track (UC5).</li>
+</ol>
+<h1>6. Hazard analysis and risk assessment</h1>
+<h2>6.1 Method</h2>
+<p>Hazardous events are rated with ISO 26262-3 severity (S), exposure (E) and controllability (C) classes. Because a hop is closer to a short flight than to driving, each in-flight failure condition is also classified the aviation way (ARP4761A functional hazard assessment) and given a probability target per hop. Where the two methods disagree, the stricter result governs.</p>
+<p>Rating rules used throughout:</p>
+<ul>
+<li><strong>Severity.</strong> Any event that can kill an occupant or a bystander is S3. A hop from 4.5 m that ends inverted or at more than 5 m/s vertical speed is treated as potentially fatal.</li>
+<li><strong>Exposure.</strong> Public-road situations are E4. Track use with the thrusters armed is E3 for Boost, which any Thrust-trim owner can use, and E2 for Hop, which needs the invite-only Rocket trim at an authorised site. The inverted-ramp stunt is E1.</li>
+<li><strong>Controllability.</strong> No driver can correct an unexpected thrust event or an in-flight fault within the time available (C3), except low-speed manoeuvring, where braking can partly help (C2).</li>
+</ul>
+<h2>6.2 Hazardous events</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Hazardous event</th>
+<th>Situation</th>
+<th>S</th>
+<th>E</th>
+<th>C</th>
+<th>ASIL</th>
+<th>Goal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HE1</td>
+<td>Unintended thruster firing</td>
+<td>Driving on a public road</td>
+<td>S3</td>
+<td>E4</td>
+<td>C3</td>
+<td>D</td>
+<td>SG1</td>
+</tr>
+<tr>
+<td>HE2</td>
+<td>Unintended thruster firing</td>
+<td>Parking or low speed near people</td>
+<td>S3</td>
+<td>E4</td>
+<td>C2</td>
+<td>C</td>
+<td>SG1</td>
+</tr>
+<tr>
+<td>HE3</td>
+<td>COPV rupture or uncontrolled venting</td>
+<td>Any driving or parking</td>
+<td>S3</td>
+<td>E4</td>
+<td>C3</td>
+<td>D</td>
+<td>SG2</td>
+</tr>
+<tr>
+<td>HE4</td>
+<td>Loss of steering</td>
+<td>Any driving (steer-by-wire)</td>
+<td>S3</td>
+<td>E4</td>
+<td>C3</td>
+<td>D</td>
+<td>SG3</td>
+</tr>
+<tr>
+<td>HE5</td>
+<td>Sudden loss of suction at high cornering load</td>
+<td>Track mode, near 2G</td>
+<td>S3</td>
+<td>E3</td>
+<td>C3</td>
+<td>C</td>
+<td>SG4</td>
+</tr>
+<tr>
+<td>HE6</td>
+<td>Asymmetric thrust during launch</td>
+<td>Boost, 3-4.6 g straight-line launch</td>
+<td>S3</td>
+<td>E3</td>
+<td>C3</td>
+<td>C</td>
+<td>SG5</td>
+</tr>
+<tr>
+<td>HE7</td>
+<td>Loss of thrust mid-manoeuvre (gas used up, leak, icing, valve closure)</td>
+<td>Hop</td>
+<td>S3</td>
+<td>E2</td>
+<td>C3</td>
+<td>B</td>
+<td>SG6</td>
+</tr>
+<tr>
+<td>HE8</td>
+<td>Stuck-open, stuck-closed or wrong-direction thruster</td>
+<td>Hop</td>
+<td>S3</td>
+<td>E2</td>
+<td>C3</td>
+<td>B</td>
+<td>SG6</td>
+</tr>
+<tr>
+<td>HE9</td>
+<td>Jet blast or car strikes a bystander</td>
+<td>Hop or Boost with a person in the area</td>
+<td>S3</td>
+<td>E2</td>
+<td>C3</td>
+<td>B</td>
+<td>SG7</td>
+</tr>
+<tr>
+<td>HE10</td>
+<td>Unintended external airbag deployment</td>
+<td>Highway driving</td>
+<td>S2</td>
+<td>E4</td>
+<td>C2</td>
+<td>B</td>
+<td>SG8</td>
+</tr>
+<tr>
+<td>HE11</td>
+<td>Loss of suction while inverted</td>
+<td>Inverted-ramp stunt</td>
+<td>S3</td>
+<td>E1</td>
+<td>C3</td>
+<td>A</td>
+<td>SG6</td>
+</tr>
+</tbody>
+</table>
+<h2>6.3 Functional hazard assessment for flight phases</h2>
+<table>
+<thead>
+<tr>
+<th>Failure condition</th>
+<th>Phase</th>
+<th>Effect</th>
+<th>Class</th>
+<th>Target per hop</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total loss of thrust</td>
+<td>Climb, apex, roll</td>
+<td>Fall from up to 6 m, possibly inverted</td>
+<td>Catastrophic</td>
+<td>Below 10⁻⁷</td>
+</tr>
+<tr>
+<td>Uncontained asymmetric thrust</td>
+<td>Any airborne phase</td>
+<td>Uncontrolled roll; inverted landing</td>
+<td>Catastrophic</td>
+<td>Below 10⁻⁷</td>
+</tr>
+<tr>
+<td>Loss of attitude information</td>
+<td>Any airborne phase</td>
+<td>Uncontrolled attitude</td>
+<td>Catastrophic</td>
+<td>Below 10⁻⁷</td>
+</tr>
+<tr>
+<td>Single stuck-closed nozzle</td>
+<td>Roll</td>
+<td>Reduced roll braking; possible overshoot</td>
+<td>Hazardous</td>
+<td>Below 10⁻⁵</td>
+</tr>
+<tr>
+<td>Partial loss of lift</td>
+<td>Descent</td>
+<td>Hard landing at 3–5 m/s</td>
+<td>Major</td>
+<td>Below 10⁻³</td>
+</tr>
+<tr>
+<td>Lateral drift beyond 3 m</td>
+<td>Any</td>
+<td>Car leaves the landing area</td>
+<td>Major</td>
+<td>Below 10⁻³</td>
+</tr>
+</tbody>
+</table>
+<h2>6.4 Safety goals</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Safety goal</th>
+<th>ASIL</th>
+<th>Safe state</th>
+<th>FTTI</th>
+<th>From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SG1</td>
+<td>Prevent thrust unless armed in an authorised zone with a valid driver command</td>
+<td>D</td>
+<td>Master valves closed (Road-safe)</td>
+<td>Preventive</td>
+<td>HE1, HE2</td>
+</tr>
+<tr>
+<td>SG2</td>
+<td>Prevent COPV rupture or uncontrolled venting from harming anyone</td>
+<td>D</td>
+<td>Vessels isolated; thrust-neutral venting</td>
+<td>Seconds (fill over-pressure)</td>
+<td>HE3</td>
+</tr>
+<tr>
+<td>SG3</td>
+<td>Maintain steering control</td>
+<td>D</td>
+<td>Redundant steer-by-wire, degraded mode</td>
+<td>Per steering item</td>
+<td>HE4</td>
+</tr>
+<tr>
+<td>SG4</td>
+<td>Prevent a loss of downforce greater than the chassis can handle</td>
+<td>C</td>
+<td>Speed and cornering limits, warning</td>
+<td>About 150 ms (estimate)</td>
+<td>HE5</td>
+</tr>
+<tr>
+<td>SG5</td>
+<td>Prevent asymmetric thrust during a launch</td>
+<td>C</td>
+<td>Cut thrust (safe on the ground)</td>
+<td>About 100 ms (estimate)</td>
+<td>HE6</td>
+</tr>
+<tr>
+<td>SG6</td>
+<td>Ensure any started manoeuvre can be finished and landed upright after one fault</td>
+<td>B + FHA target 1e-7 per hop</td>
+<td>Level the car, land, then cut</td>
+<td>200 ms (Sim 3)</td>
+<td>HE7, HE8, HE11</td>
+</tr>
+<tr>
+<td>SG7</td>
+<td>Prevent jet blast or the car striking a person</td>
+<td>B</td>
+<td>Refuse to arm</td>
+<td>Preventive</td>
+<td>HE9</td>
+</tr>
+<tr>
+<td>SG8</td>
+<td>Prevent external airbag deployment outside Hop mode</td>
+<td>B</td>
+<td>Airbags disarmed</td>
+<td>Preventive</td>
+<td>HE10</td>
+</tr>
+</tbody>
+</table>
+<h2>6.5 Rationale for difficult ratings</h2>
+<p><strong>Why SG6 is ASIL B with a quantitative target.</strong> By the ISO 26262 tables, a fatal loss of control during a hop is S3, C3 and E2, which yields ASIL B. That rating reflects how rarely the hop situation occurs across the whole fleet, not how dangerous each hop is. For the person in the car, a hop is a flight. An ASIL B rating on its own would allow a per-hop risk far above what aviation accepts for a catastrophic failure. This study therefore keeps ASIL B for the development process and adds the FHA target of 10⁻⁷ per hop as a quantitative requirement, checked in Sim 6 and section 9.3. If the operator markets the hop as a routine feature (E3 or E4), SG6 rises to ASIL C or D.</p>
+<p><strong>Why HE11 is merged into SG6.</strong> Loss of suction while inverted (ASIL A on its own) has the same safe state as an in-flight fault: level the car and land. It is handled by SG6's recovery requirements.</p>
+<p><strong>Why SG3 is outside the item.</strong> Steering is a separate steer-by-wire item with its own ASIL D goal. It appears here only as an interface; FSR-3.1 records the allocation.</p>
+<p><strong>Why HE1 and HE2 share SG1.</strong> They are the same malfunction in different situations; the goal takes the worse rating (ASIL D).</p>
+<h1>7. Functional and technical safety concept</h1>
+<h2>7.1 Functional safety requirements</h2>
+<p>Each safety goal is refined into functional safety requirements that say <em>what</em> the system must do, without naming hardware.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Functional safety requirement</th>
+<th>Goal</th>
+<th>ASIL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FSR-1.1</td>
+<td>Keep the gas path to the nozzles closed unless two independent channels both authorise it</td>
+<td>SG1</td>
+<td>D</td>
+</tr>
+<tr>
+<td>FSR-1.2</td>
+<td>Authorise thrust only with driver consent, an authorised zone confirmed by two independent sources and passed pre-arm checks</td>
+<td>SG1</td>
+<td>D</td>
+</tr>
+<tr>
+<td>FSR-1.3</td>
+<td>Accept thrust commands only from authenticated sources inside the thrust domain</td>
+<td>SG1</td>
+<td>D</td>
+</tr>
+<tr>
+<td>FSR-2.1</td>
+<td>Contain the stored gas under all foreseeable pressure, temperature and impact loads</td>
+<td>SG2</td>
+<td>D</td>
+</tr>
+<tr>
+<td>FSR-2.2</td>
+<td>On crash or fire, isolate every vessel and vent only without net thrust</td>
+<td>SG2</td>
+<td>D</td>
+</tr>
+<tr>
+<td>FSR-3.1</td>
+<td>Maintain steering control (allocated to the steer-by-wire item; outside this item)</td>
+<td>SG3</td>
+<td>D</td>
+</tr>
+<tr>
+<td>FSR-4.1</td>
+<td>Detect loss of downforce and limit speed and cornering before grip is exceeded</td>
+<td>SG4</td>
+<td>C</td>
+</tr>
+<tr>
+<td>FSR-5.1</td>
+<td>Detect asymmetric thrust during a launch and stop it</td>
+<td>SG5</td>
+<td>C</td>
+</tr>
+<tr>
+<td>FSR-6.1</td>
+<td>Start a manoeuvre only when the remaining gas can finish it after one fault</td>
+<td>SG6</td>
+<td>B</td>
+</tr>
+<tr>
+<td>FSR-6.2</td>
+<td>Respond to any in-flight fault with recovery to an upright landing, never with loss of all thrust</td>
+<td>SG6</td>
+<td>B</td>
+</tr>
+<tr>
+<td>FSR-6.3</td>
+<td>Isolate a faulty thruster path and compensate with the others</td>
+<td>SG6</td>
+<td>B</td>
+</tr>
+<tr>
+<td>FSR-6.4</td>
+<td>Estimate attitude, height and gas state with tolerance to one sensor fault</td>
+<td>SG6</td>
+<td>B</td>
+</tr>
+<tr>
+<td>FSR-7.1</td>
+<td>Refuse to arm unless the clear zone is empty and wind is within limits</td>
+<td>SG7</td>
+<td>B</td>
+</tr>
+<tr>
+<td>FSR-8.1</td>
+<td>Arm external airbags only in Hop mode above 1.5 m</td>
+<td>SG8</td>
+<td>B</td>
+</tr>
+</tbody>
+</table>
+<h2>7.2 Safety mechanisms</h2>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Detects</th>
+<th>Reaction</th>
+<th>Goal</th>
+<th>Covered by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Two-channel arming with master valves in series</td>
+<td>Wrong arming decision by either computer</td>
+<td>The other channel's valve stays closed</td>
+<td>SG1</td>
+<td>TSR-01, TSR-02</td>
+</tr>
+<tr>
+<td>Power-on leak-down test of master valves</td>
+<td>Latent stuck-open or leaking master valve</td>
+<td>Thrust locked out</td>
+<td>SG1, SG2</td>
+<td>TSR-03</td>
+</tr>
+<tr>
+<td>Pre-arm valve function test</td>
+<td>Stuck-open or stuck-closed thruster, line or master valve</td>
+<td>Arming refused</td>
+<td>SG1, SG6</td>
+<td>TSR-16</td>
+</tr>
+<tr>
+<td>Line pressure against command, IMU residual</td>
+<td>Stuck-open thruster valve in flight</td>
+<td>Line isolated within 20 ms, others compensate</td>
+<td>SG5, SG6</td>
+<td>TSR-09, TSR-15</td>
+</tr>
+<tr>
+<td>Gas reserve prediction</td>
+<td>Too little gas to finish after one fault</td>
+<td>Lower manoeuvre offered or recovery started</td>
+<td>SG6</td>
+<td>TSR-10, TSR-11</td>
+</tr>
+<tr>
+<td>Monitor envelope check</td>
+<td>Attitude, rate or height outside the planned envelope</td>
+<td>Recovery commanded, not gas cut</td>
+<td>SG6</td>
+<td>TSR-12, TSR-20</td>
+</tr>
+<tr>
+<td>IMU voting with dissimilar check</td>
+<td>Single attitude-sensor fault</td>
+<td>Faulty sensor masked</td>
+<td>SG6</td>
+<td>TSR-13</td>
+</tr>
+<tr>
+<td>Fail-operational hop hardware</td>
+<td>Power, coil, switch or computer loss mid-hop</td>
+<td>Master valves held open; backup law takes over</td>
+<td>SG6</td>
+<td>TSR-21, TSR-22, TSR-23</td>
+</tr>
+<tr>
+<td>Plenum pressure monitoring</td>
+<td>Suction loss</td>
+<td>Speed and cornering limits, warning</td>
+<td>SG4</td>
+<td>TSR-08</td>
+</tr>
+<tr>
+<td>Crash isolation</td>
+<td>Crash or fire</td>
+<td>All vessel valves close; thrust-neutral venting</td>
+<td>SG2</td>
+<td>TSR-07</td>
+</tr>
+<tr>
+<td>Dual dissimilar pressure sensing</td>
+<td>Pressure sensor fault</td>
+<td>Faulty reading masked; fill or hop refused</td>
+<td>SG2, SG6</td>
+<td>TSR-05</td>
+</tr>
+<tr>
+<td>Fill-coupling dew-point check</td>
+<td>Wet refill air</td>
+<td>Fill refused</td>
+<td>SG2</td>
+<td>TSR-19</td>
+</tr>
+<tr>
+<td>Airbag arming window</td>
+<td>Deployment outside Hop mode</td>
+<td>Airbags stay disarmed</td>
+<td>SG8</td>
+<td>TSR-14</td>
+</tr>
+</tbody>
+</table>
+<h2>7.3 Degradation and warning concept</h2>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>System response</th>
+<th>Driver information</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Any fault detected on the ground</td>
+<td>Road-safe mode; thrust locked out until service</td>
+<td>Warning; thrust functions greyed out</td>
+</tr>
+<tr>
+<td>Gas below reserve before a hop</td>
+<td>Lower manoeuvre offered</td>
+<td>Message with the largest manoeuvre available</td>
+</tr>
+<tr>
+<td>Fault during Boost</td>
+<td>Thrust cut; car stays on its wheels</td>
+<td>Warning</td>
+</tr>
+<tr>
+<td>Fault during a hop</td>
+<td>Recover with remaining gas: level first, then descend and land</td>
+<td>Recovery indicator; harness pre-tension</td>
+</tr>
+<tr>
+<td>Second fault during recovery</td>
+<td>Backup law holds attitude and descends; external airbags armed</td>
+<td>As above</td>
+</tr>
+<tr>
+<td>Suction loss in Track mode</td>
+<td>Speed and cornering limits within 100 ms</td>
+<td>Warning</td>
+</tr>
+</tbody>
+</table>
+<h2>7.4 Technical safety requirements</h2>
+<p>Technical safety requirements say <em>how</em>, allocate each function to an architecture element of chapter 4 and name the verification item that will prove it. They are generated from the requirements database (<code>data/technical_safety_requirements.csv</code>).</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Technical safety requirement</th>
+<th>ASIL</th>
+<th>From</th>
+<th>Allocated to</th>
+<th>Verified by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TSR-01</td>
+<td>Two normally closed master valves in series: valve A powered only by the safety monitor, valve B only by the thrust control unit</td>
+<td>B(D) + B(D)</td>
+<td>FSR-1.1</td>
+<td>S4, S9, IF-01, IF-02</td>
+<td>VER-01</td>
+</tr>
+<tr>
+<td>TSR-02</td>
+<td>Arming requires Track mode, a physical arm switch, zone authorisation from two independent sources, speed and wind within limits, belts fastened and a clear zone</td>
+<td>D</td>
+<td>FSR-1.2, FSR-7.1</td>
+<td>S8, S9, S10, IF-05, IF-09</td>
+<td>VER-02, VER-20</td>
+</tr>
+<tr>
+<td>TSR-03</td>
+<td>A leak-down test of the master valves runs at every power-on; a failure locks out thrust</td>
+<td>D</td>
+<td>FSR-1.1</td>
+<td>S4, S8, S9</td>
+<td>VER-01</td>
+</tr>
+<tr>
+<td>TSR-04</td>
+<td>Thrust messages are authenticated; production cars have no remote thrust path</td>
+<td>D</td>
+<td>FSR-1.3</td>
+<td>S9, IF-03</td>
+<td>VER-03, VER-21</td>
+</tr>
+<tr>
+<td>TSR-05</td>
+<td>Pressure is measured by two dissimilar sensors per gas group, with temperature compensation</td>
+<td>D</td>
+<td>FSR-6.4, FSR-2.1</td>
+<td>S3, S8, IF-07</td>
+<td>VER-04</td>
+</tr>
+<tr>
+<td>TSR-06</td>
+<td>COPVs meet a burst ratio of 2.25 or more and pass pressure-cycling, fire, drop and impact tests equivalent to UN GTR 13</td>
+<td>Design standard</td>
+<td>FSR-2.1</td>
+<td>S3</td>
+<td>VER-05</td>
+</tr>
+<tr>
+<td>TSR-07</td>
+<td>On crash detection all vessel valves close within 50 ms; venting only through thrust-neutral diffusers away from the cabin</td>
+<td>D</td>
+<td>FSR-2.2</td>
+<td>S3, S4, S11, IF-10</td>
+<td>VER-06</td>
+</tr>
+<tr>
+<td>TSR-08</td>
+<td>Loss of suction is detected from plenum pressure and speed and cornering limits apply within 100 ms, with a warning</td>
+<td>C</td>
+<td>FSR-4.1</td>
+<td>S6, S7, IF-08</td>
+<td>VER-07</td>
+</tr>
+<tr>
+<td>TSR-09</td>
+<td>A stuck-open thruster valve is detected and its line isolated within 20 ms (hard ceiling 50 ms)</td>
+<td>B</td>
+<td>FSR-5.1, FSR-6.3</td>
+<td>S4, S5, S9, IF-11</td>
+<td>VER-08</td>
+</tr>
+<tr>
+<td>TSR-10</td>
+<td>A hop starts only if usable gas is at least 1.2 times the predicted need, corrected for mass and gas temperature; otherwise a lower manoeuvre is offered</td>
+<td>B</td>
+<td>FSR-6.1</td>
+<td>S3, S9</td>
+<td>VER-09</td>
+</tr>
+<tr>
+<td>TSR-11</td>
+<td>If predicted gas at landing falls below the reserve mid-manoeuvre, recovery starts at once: level attitude first, then land</td>
+<td>B</td>
+<td>FSR-6.2</td>
+<td>S9</td>
+<td>VER-10</td>
+</tr>
+<tr>
+<td>TSR-12</td>
+<td>While airborne the safety monitor commands recovery instead of closing the master valves, unless thrust itself is the uncontainable fault</td>
+<td>B</td>
+<td>FSR-6.2</td>
+<td>S9</td>
+<td>VER-11</td>
+</tr>
+<tr>
+<td>TSR-13</td>
+<td>Attitude comes from three IMUs with voting; the monitor checks it with a dissimilar sensor</td>
+<td>B</td>
+<td>FSR-6.4</td>
+<td>S8, IF-06</td>
+<td>VER-12</td>
+</tr>
+<tr>
+<td>TSR-14</td>
+<td>External airbags arm only in Hop mode above 1.5 m and are disarmed by two independent signals on landing</td>
+<td>B</td>
+<td>FSR-8.1</td>
+<td>S11</td>
+<td>VER-13</td>
+</tr>
+<tr>
+<td>TSR-15</td>
+<td>After isolating any one lift group, the remaining torque-balanced groups lift at least 1.1 times maximum vehicle weight (about 10 kN per group)</td>
+<td>B</td>
+<td>FSR-6.3</td>
+<td>S5</td>
+<td>VER-14</td>
+</tr>
+<tr>
+<td>TSR-16</td>
+<td>Before every arming each thruster, line and master valve is cycled against a pressurised test volume; coverage of stuck-open and stuck-closed faults at least 99.9%</td>
+<td>D</td>
+<td>FSR-1.1, FSR-6.3</td>
+<td>S4, S5, S9</td>
+<td>VER-15</td>
+</tr>
+<tr>
+<td>TSR-17</td>
+<td>Any single stuck-closed nozzle leaves at least 50% of nominal roll-braking authority (individually controlled nozzles)</td>
+<td>B</td>
+<td>FSR-6.3</td>
+<td>S5, S9</td>
+<td>VER-16</td>
+</tr>
+<tr>
+<td>TSR-18</td>
+<td>COPVs, valves and seals are qualified to the lowest gas temperature of a full discharge, or discharge is limited to their qualified temperature</td>
+<td>D</td>
+<td>FSR-2.1</td>
+<td>S3, S4, S5</td>
+<td>VER-17</td>
+</tr>
+<tr>
+<td>TSR-19</td>
+<td>Refill air is dried to a dew point below -40 C, checked at the coupling; otherwise the fill is refused</td>
+<td>D</td>
+<td>FSR-2.1</td>
+<td>S2</td>
+<td>VER-18</td>
+</tr>
+<tr>
+<td>TSR-20</td>
+<td>The recovery planner chooses the upright attitude reachable with the least altitude loss, using the predicted stopping angle</td>
+<td>B</td>
+<td>FSR-6.2</td>
+<td>S9</td>
+<td>VER-19</td>
+</tr>
+<tr>
+<td>TSR-21</td>
+<td>In Hop mode no single loss of power, coil, switch or computer closes a master valve for at least 5 s (dual-wound coils, second driver, hold-up energy); closing in flight needs an explicit command</td>
+<td>B</td>
+<td>FSR-6.2</td>
+<td>S1, S4, S9</td>
+<td>VER-22</td>
+</tr>
+<tr>
+<td>TSR-22</td>
+<td>Hop-mode control is fail-operational for at least 5 s: a backup attitude-hold and descent law on independent hardware takes over within 50 ms</td>
+<td>B</td>
+<td>FSR-6.2</td>
+<td>S9</td>
+<td>VER-23</td>
+</tr>
+<tr>
+<td>TSR-23</td>
+<td>Thruster and line valve commands are direct-wired or carried on two independent buses; a lost command opens nothing new</td>
+<td>B</td>
+<td>FSR-6.2</td>
+<td>S9, IF-03, IF-11</td>
+<td>VER-24</td>
+</tr>
+</tbody>
+</table>
+<h1>8. Safety analyses</h1>
+<p>Five analyses check the architecture from different directions: the FMEA works up from component failures, the fault tree works down from the worst outcome, the FMEDA puts numbers on the hardware, the dependent failure analysis looks for faults that defeat both channels at once, and STPA looks for unsafe control decisions with nothing broken.</p>
+<h2>8.1 Subsystem FMEA</h2>
+<table>
+<thead>
+<tr>
+<th>Subsystem</th>
+<th>Failure mode</th>
+<th>Worst effect</th>
+<th>Main safety mechanism</th>
+<th>Goal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S2 Compressor and fill</td>
+<td>Over-pressure; wet air</td>
+<td>Vessel overload; ice in valves</td>
+<td>Fill limit plus mechanical relief; dew-point check</td>
+<td>SG2</td>
+</tr>
+<tr>
+<td>S3 Gas storage</td>
+<td>Rupture; leak</td>
+<td>Blast; loss of reserve in flight</td>
+<td>Burst ratio, shielding; pressure decay monitor</td>
+<td>SG2, SG6</td>
+</tr>
+<tr>
+<td>S4 Distribution</td>
+<td>Master or line valve stuck open or closed</td>
+<td>Unintended thrust; loss of a lift group</td>
+<td>Series masters; pre-arm test; line isolation</td>
+<td>SG1, SG6</td>
+</tr>
+<tr>
+<td>S5 Thrusters</td>
+<td>Valve stuck open, stuck closed or slow</td>
+<td>Asymmetric thrust</td>
+<td>Line isolation and compensation</td>
+<td>SG5, SG6</td>
+</tr>
+<tr>
+<td>S6 Suction</td>
+<td>Fan or skirt failure</td>
+<td>Sudden loss of downforce</td>
+<td>Plenum pressure monitoring, limits</td>
+<td>SG4</td>
+</tr>
+<tr>
+<td>S8 Sensing</td>
+<td>IMU, pressure or positioning error</td>
+<td>Wrong control or wrong zone</td>
+<td>Voting, dissimilar checks</td>
+<td>SG1, SG6</td>
+</tr>
+<tr>
+<td>S9 Control</td>
+<td>Wrong command; computer lost</td>
+<td>Unintended thrust; loss of control</td>
+<td>Two channels; backup hop law</td>
+<td>SG1, SG6</td>
+</tr>
+<tr>
+<td>S10 HMI and arming</td>
+<td>Stuck arm switch; false request</td>
+<td>Arming without consent</td>
+<td>Two-step confirm plus physical switch</td>
+<td>SG1</td>
+</tr>
+<tr>
+<td>S11 Protection</td>
+<td>Airbag fires on the road</td>
+<td>Driver startled; loss of view</td>
+<td>Arming window, two disarm signals</td>
+<td>SG8</td>
+</tr>
+</tbody>
+</table>
+<h2>8.2 Component design FMEA</h2>
+<p>The component FMEA uses the AIAG-VDA method: severity (S), occurrence (O) and detection (D) are each rated 1–10 and combined into an action priority (H, M or L) from the AIAG-VDA table. Parts are representative types, not Tesla's parts (A-11). Of 31 failure modes, 23 are at action priority H. That is expected at concept stage, because most modes have S = 9 or 10 and design verification does not yet exist. The table below is generated from <code>results/component_fmea.csv</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Failure mode</th>
+<th>Effect</th>
+<th>S</th>
+<th>O</th>
+<th>D</th>
+<th>AP</th>
+<th>Goal</th>
+<th>Field diagnostic</th>
+<th>DC %</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>COPV (Type IV, ~100 L, 400 bar)</td>
+<td>Rupture</td>
+<td>Blast and fragments</td>
+<td>10</td>
+<td>3</td>
+<td>2</td>
+<td>L</td>
+<td>SG2</td>
+<td>Impact log, pressure-rate monitor</td>
+<td>60</td>
+</tr>
+<tr>
+<td>COPV (Type IV, ~100 L, 400 bar)</td>
+<td>Liner or boss leak</td>
+<td>Gas loss; reserve error in flight</td>
+<td>9</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Pressure decay vs model</td>
+<td>95</td>
+</tr>
+<tr>
+<td>Pressure relief device (burst disc + thermal)</td>
+<td>Opens early</td>
+<td>Uncontrolled vent; possible net thrust</td>
+<td>8</td>
+<td>4</td>
+<td>3</td>
+<td>M</td>
+<td>SG2</td>
+<td>Pressure drop</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Pressure relief device (burst disc + thermal)</td>
+<td>Fails to open in fire</td>
+<td>Tank rupture in fire</td>
+<td>10</td>
+<td>4</td>
+<td>2</td>
+<td>H</td>
+<td>SG2</td>
+<td>None in service</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Group isolation valve (NC solenoid)</td>
+<td>Stuck open</td>
+<td>Group cannot be isolated after crash</td>
+<td>9</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG2</td>
+<td>Power-on leak-down test</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Group isolation valve (NC solenoid)</td>
+<td>Stuck closed</td>
+<td>Group gas unavailable; lower reserve</td>
+<td>7</td>
+<td>6</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Pre-arm function test</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Master valve A / B (NC solenoid, series)</td>
+<td>Stuck open or seat leak</td>
+<td>One SG1 barrier lost (latent)</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG1</td>
+<td>Inter-stage and manifold pressure, power-on leak-down</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Master valve A / B (NC solenoid, series)</td>
+<td>Closes in flight (coil or power loss)</td>
+<td>All thrust lost mid-hop</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Coil current monitor</td>
+<td>90</td>
+</tr>
+<tr>
+<td>Pressure regulator (dome-loaded)</td>
+<td>Fails high</td>
+<td>Over-pressure in manifold; thrust excess</td>
+<td>8</td>
+<td>4</td>
+<td>3</td>
+<td>M</td>
+<td>SG5</td>
+<td>Manifold pressure</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Pressure regulator (dome-loaded)</td>
+<td>Fails low or freezes</td>
+<td>Thrust shortfall in flight</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Manifold pressure vs command</td>
+<td>95</td>
+</tr>
+<tr>
+<td>Line isolation valve (NC solenoid)</td>
+<td>Stuck open</td>
+<td>Stuck thruster cannot be isolated</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Pre-arm function test</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Line isolation valve (NC solenoid)</td>
+<td>Stuck closed</td>
+<td>Lift group lost</td>
+<td>10</td>
+<td>6</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Pre-arm function test</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Thruster valve (fast solenoid)</td>
+<td>Stuck open</td>
+<td>Asymmetric thrust; latent SG1 barrier loss</td>
+<td>10</td>
+<td>6</td>
+<td>3</td>
+<td>H</td>
+<td>SG1/SG6</td>
+<td>Line pressure vs command; pre-arm test</td>
+<td>95</td>
+</tr>
+<tr>
+<td>Thruster valve (fast solenoid)</td>
+<td>Stuck closed</td>
+<td>Roll authority lost (weak spot)</td>
+<td>10</td>
+<td>6</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Pre-arm function test</td>
+<td>95</td>
+</tr>
+<tr>
+<td>Thruster valve (fast solenoid)</td>
+<td>Slow response</td>
+<td>Control degradation</td>
+<td>7</td>
+<td>6</td>
+<td>4</td>
+<td>H</td>
+<td>SG6</td>
+<td>Command vs pressure timing</td>
+<td>90</td>
+</tr>
+<tr>
+<td>Thruster valve (fast solenoid)</td>
+<td>Seat leak</td>
+<td>Small unwanted thrust; latent SG1</td>
+<td>6</td>
+<td>6</td>
+<td>4</td>
+<td>M</td>
+<td>SG1</td>
+<td>Power-on leak-down</td>
+<td>90</td>
+</tr>
+<tr>
+<td>Pressure transducer (strain gauge)</td>
+<td>Drift or stuck in range</td>
+<td>Wrong reserve estimate; hop starts short of gas</td>
+<td>9</td>
+<td>6</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Cross-check with second sensor and gas model</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Pressure transducer (strain gauge)</td>
+<td>Open or short</td>
+<td>Signal lost</td>
+<td>6</td>
+<td>6</td>
+<td>3</td>
+<td>M</td>
+<td>SG6</td>
+<td>Range check</td>
+<td>99</td>
+</tr>
+<tr>
+<td>IMU (MEMS)</td>
+<td>Wrong output</td>
+<td>Wrong attitude corrections</td>
+<td>10</td>
+<td>6</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Voting</td>
+<td>99</td>
+</tr>
+<tr>
+<td>IMU (MEMS)</td>
+<td>Loss of output</td>
+<td>One attitude source lost</td>
+<td>6</td>
+<td>6</td>
+<td>3</td>
+<td>M</td>
+<td>SG6</td>
+<td>Timeout</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Thrust control unit (lockstep MCU)</td>
+<td>Wrong output</td>
+<td>Erroneous thrust or valve command</td>
+<td>10</td>
+<td>4</td>
+<td>2</td>
+<td>H</td>
+<td>SG1/SG6</td>
+<td>Lockstep compare, monitor plausibility</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Thrust control unit (lockstep MCU)</td>
+<td>Loss of function in flight</td>
+<td>No flight control until backup acts</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Watchdog</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Safety monitor (dissimilar MCU)</td>
+<td>Wrong output (enable)</td>
+<td>One SG1 barrier lost</td>
+<td>10</td>
+<td>4</td>
+<td>2</td>
+<td>H</td>
+<td>SG1</td>
+<td>Inter-stage pressure, TCU cross-check</td>
+<td>90</td>
+</tr>
+<tr>
+<td>Safety monitor (dissimilar MCU)</td>
+<td>Loss of function in flight</td>
+<td>Master valve A hold lost</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>TCU watchdog of monitor</td>
+<td>99</td>
+</tr>
+<tr>
+<td>High-side switch, master valve A / B</td>
+<td>Short (stuck on)</td>
+<td>One SG1 barrier lost</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG1</td>
+<td>Output read-back</td>
+<td>99</td>
+</tr>
+<tr>
+<td>High-side switch, master valve A / B</td>
+<td>Open</td>
+<td>Master valve closes in flight</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Coil current</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Low-side valve driver</td>
+<td>Short (valve on)</td>
+<td>Behaves as stuck-open valve</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG1/SG6</td>
+<td>Driver diagnostics</td>
+<td>95</td>
+</tr>
+<tr>
+<td>Low-side valve driver</td>
+<td>Open (valve off)</td>
+<td>Behaves as stuck-closed valve</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Open-load detection</td>
+<td>95</td>
+</tr>
+<tr>
+<td>Arm-line harness, each channel</td>
+<td>Short to battery</td>
+<td>One SG1 barrier lost</td>
+<td>10</td>
+<td>3</td>
+<td>4</td>
+<td>L</td>
+<td>SG1</td>
+<td>Read-back</td>
+<td>90</td>
+</tr>
+<tr>
+<td>Satellite and beacon receivers</td>
+<td>False position or replayed beacon</td>
+<td>Zone wrongly authorised (needs both)</td>
+<td>8</td>
+<td>4</td>
+<td>3</td>
+<td>M</td>
+<td>SG1</td>
+<td>Cross-check with inertial data</td>
+<td>90</td>
+</tr>
+<tr>
+<td>Low-voltage supply, thrust domain</td>
+<td>Loss in flight</td>
+<td>Valves close; thrust lost</td>
+<td>10</td>
+<td>4</td>
+<td>3</td>
+<td>H</td>
+<td>SG6</td>
+<td>Voltage monitor</td>
+<td>99</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Findings that changed the architecture.</strong></p>
+<ol>
+<li><em>Master valve closes in flight (coil or power loss).</em> A normally closed valve is the right choice on the ground but drops the car in the air. This led to TSR-21 and AD-04.</li>
+<li><em>Thrust control unit lost in flight.</em> With no backup control law, the monitor can only cut gas, which Sim 2 shows is fatal. This led to TSR-22.</li>
+<li><em>Valve command bus lost.</em> A shared bus is a single point for every nozzle. This led to TSR-23.</li>
+<li><em>Pressure regulator freezes.</em> A full discharge chills the gas to about 142 K. This is covered by TSR-18 and TSR-19.</li>
+</ol>
+<h2>8.3 FMEDA and hardware metrics for SG1</h2>
+<p>The fault tree for SG1 (no unintended thrust) was solved for minimal cut sets, and each cut set was assigned a rate from the component failure rates, diagnostic coverage and pre-arm test interval: q = λ·[DC·τ/2 + (1 − DC)·T/2], with τ = 1 h between pre-arm tests and T = 10,000 h vehicle life (A-12, A-13).</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Result</th>
+<th>ASIL D target</th>
+<th>Met</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Safety-related failure rate</td>
+<td>1,236 FIT</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Single-point fault metric (SPFM)</td>
+<td>100.0% (rounded; only the computer common-cause term is single-point)</td>
+<td>≥ 99%</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Latent fault metric (LFM)</td>
+<td>98.7%</td>
+<td>≥ 90%</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Probabilistic metric for hardware failures (PMHF)</td>
+<td>0.006 FIT</td>
+<td>&lt; 10 FIT</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Minimal cut sets</td>
+<td>36: one of order 1, two of order 2, 24 of order 3, nine of order 4</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Fault tree" src="figures/F06_fault_tree_unsafe_landing.png" /></p>
+<p><em>Figure 5. Fault tree for an unsafe landing after a hop (SG6): a thrust fault (too little impulse, misapplied thrust or a disturbance) must combine with a failed recovery.</em></p>
+<p><img alt="SG1 cut sets" src="figures/F07_sg1_cut_sets.png" /></p>
+<p><em>Figure 6. The largest SG1 cut sets by rate. Common-cause failure of the two computers dominates; every independent combination is at least three orders of magnitude smaller.</em></p>
+<p><strong>How to read these numbers.</strong> The metrics pass by a wide margin, but they rest on assumed failure rates and β-factors (1% for the computers and 2% for the master valves, A-14). The ranking matters more than the absolute values: the residual is dominated by common-cause faults, so the dependent failure analysis is the decisive evidence for SG1. An earlier, coarser FMEDA (Sim 6) gave PMHF 0.053 FIT; it is superseded by this component-level result.</p>
+<h2>8.4 Fault tree for SG6</h2>
+<p>An unsafe landing needs a thrust fault and a failed recovery together (Figure 5). That AND gate is the reason recovery logic matters so much. Per-hop probabilities from Sim 6, with 11 kN lift groups and a 99.9%-coverage pre-arm valve test, are:</p>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Probability per hop</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stuck-closed thruster valve, latent at take-off, during the roll</td>
+<td>1.8 × 10⁻⁷</td>
+</tr>
+<tr>
+<td>Leak</td>
+<td>1.4 × 10⁻⁷</td>
+</tr>
+<tr>
+<td>Stuck-open thruster valve</td>
+<td>1.4 × 10⁻⁸</td>
+</tr>
+<tr>
+<td><strong>Total from random hardware faults</strong></td>
+<td><strong>3.3 × 10⁻⁷</strong> (target 10⁻⁷, not yet met)</td>
+</tr>
+</tbody>
+</table>
+<p>Stuck-closed nozzles during the roll dominate. Meeting the target needs either individually controlled nozzles that keep at least 50% roll-braking authority (TSR-17) or a better recovery planner (TSR-20). Both show gaps in simulation today.</p>
+<h2>8.5 Dependent failure analysis</h2>
+<table>
+<thead>
+<tr>
+<th>Coupling factor</th>
+<th>Could defeat</th>
+<th>Measure</th>
+<th>Residual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Same microcontroller design or compiler</td>
+<td>Both computers</td>
+<td>Dissimilar monitor, different supplier and tool chain (AD-02)</td>
+<td>β about 1%</td>
+</tr>
+<tr>
+<td>Same low-voltage supply</td>
+<td>Both computers; both master valves</td>
+<td>Separate feeds; monitor's own buffer; hold-up store (TSR-21)</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Same zone data</td>
+<td>Both channels' arming decisions</td>
+<td>Independent zone check in the monitor (CC-13, AD-09)</td>
+<td>Low after CC-13</td>
+</tr>
+<tr>
+<td>Same valve type and batch</td>
+<td>Both master valves</td>
+<td>Different valve suppliers or seat designs; leak-down test (TSR-03)</td>
+<td>β about 2%</td>
+</tr>
+<tr>
+<td>Cold from gas expansion</td>
+<td>Valves, seals, regulator</td>
+<td>Cold qualification (TSR-18); dry air (TSR-19)</td>
+<td>Needs test</td>
+</tr>
+<tr>
+<td>Ice or contamination in the gas</td>
+<td>All valves</td>
+<td>Filter and dew-point check (TSR-19)</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Vessel burst fragments</td>
+<td>Harness, both computers</td>
+<td>Segregation, shielding and routing rules</td>
+<td>Needs layout</td>
+</tr>
+<tr>
+<td>Vibration and shock of landing</td>
+<td>Connectors, sensors</td>
+<td>Qualification to landing loads (Sim 5)</td>
+<td>Needs test</td>
+</tr>
+<tr>
+<td>Same software requirement error</td>
+<td>Both channels</td>
+<td>Different teams and requirements derived independently from FSRs</td>
+<td>Process measure</td>
+</tr>
+<tr>
+<td>Cyber attack on a shared input</td>
+<td>Both channels</td>
+<td>Isolated domain, authenticated bus (chapter 10)</td>
+<td>See TARA</td>
+</tr>
+</tbody>
+</table>
+<h2>8.6 STPA unsafe control actions</h2>
+<p>STPA covers hazards that need no failure: the controller does exactly what it was designed to do, but the decision is wrong for the situation.</p>
+<table>
+<thead>
+<tr>
+<th>Control action</th>
+<th>Not provided</th>
+<th>Provided when unsafe</th>
+<th>Wrong timing or order</th>
+<th>Stopped too soon or applied too long</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arm thrust</td>
+<td>—</td>
+<td>UCA-1: arming with a person in the clear zone (SG7)</td>
+<td>UCA-2: arming before the pre-arm test finishes (SG1)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Open master valves</td>
+<td>UCA-3: master valves not held open mid-hop (SG6)</td>
+<td>UCA-4: open on a public road (SG1)</td>
+<td>—</td>
+<td>UCA-5: closed mid-hop by a supply dip (SG6)</td>
+</tr>
+<tr>
+<td>Fire thrusters for a hop</td>
+<td>—</td>
+<td>UCA-6: hop with too little gas for recovery (SG6)</td>
+<td>UCA-7: roll starts before climb rate settles (SG6)</td>
+<td>UCA-8: thrust held after touchdown, car slides (SG7)</td>
+</tr>
+<tr>
+<td>Command recovery</td>
+<td>UCA-9: fault detected, no recovery commanded (SG6)</td>
+<td>UCA-10: recovery on a false alarm wastes gas (SG6)</td>
+<td>UCA-11: recovery after the FTTI has passed (SG6)</td>
+<td>UCA-12: recovery ends before the car is level (SG6)</td>
+</tr>
+<tr>
+<td>Cut all gas</td>
+<td>—</td>
+<td>UCA-13: cut while airborne (SG6)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Deploy external airbags</td>
+<td>UCA-14: no deployment on a hard landing (SG8)</td>
+<td>UCA-15: deployment on the road (SG8)</td>
+<td>UCA-16: deployment too early, airbag vents before contact (SG8)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Every unsafe control action maps to an existing requirement: UCA-1 to TSR-02; UCA-2 to TSR-16; UCA-3, UCA-5 and UCA-13 to TSR-12 and TSR-21; UCA-4 to TSR-01 and TSR-02; UCA-6 to TSR-10; UCA-7 to TSR-11 and TSR-20; UCA-8 to a landing-detection requirement to be added in the next issue (open issue OI-07); UCA-9 to UCA-12 to TSR-09, TSR-11, TSR-12 and TSR-20; UCA-14 to UCA-16 to TSR-14.</p>
+<h1>9. SOTIF analysis</h1>
+<p>ISO 21448 deals with hazards that arise when nothing is broken: the sensors, models or control laws are simply not good enough for the situation. For a hop these are the main risk, because the physics is unforgiving and the domain is new.</p>
+<h2>9.1 Triggering conditions</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Triggering condition</th>
+<th>Functional insufficiency</th>
+<th>Possible hazard</th>
+<th>Measure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TC-01</td>
+<td>Gust above the planned limit during the roll</td>
+<td>Control authority too low</td>
+<td>Inverted landing</td>
+<td>Wind limit in the operating domain (A-15); gust term in the reserve check</td>
+</tr>
+<tr>
+<td>TC-02</td>
+<td>Gas colder than predicted after a fast refill</td>
+<td>Reserve over-estimated</td>
+<td>Gas runs out before landing</td>
+<td>Temperature-corrected reserve (TSR-10)</td>
+</tr>
+<tr>
+<td>TC-03</td>
+<td>Mass or centre of gravity outside the assumed range (luggage, passenger)</td>
+<td>Controller tuned for wrong inertia</td>
+<td>Roll overshoot</td>
+<td>Seat and load sensing; refuse hop if out of range</td>
+</tr>
+<tr>
+<td>TC-04</td>
+<td>Ground effect and jet reflection near the surface</td>
+<td>Thrust model wrong below about 1 m</td>
+<td>Bounce or tilt at take-off and landing</td>
+<td>Ground-effect term; thrust-stand data</td>
+</tr>
+<tr>
+<td>TC-05</td>
+<td>Loose gravel or debris</td>
+<td>Jets throw debris; suction skirt lifts</td>
+<td>Bystander injury; tilt</td>
+<td>Surface check in the operating domain</td>
+</tr>
+<tr>
+<td>TC-06</td>
+<td>Satellite multipath at the track</td>
+<td>Position error</td>
+<td>Arming outside the zone</td>
+<td>Beacon plus inertial cross-check (CC-13)</td>
+</tr>
+<tr>
+<td>TC-07</td>
+<td>Vibration or ice affects pressure sensing</td>
+<td>Biased gas estimate</td>
+<td>Wrong reserve decision</td>
+<td>Dual dissimilar sensors (TSR-05)</td>
+</tr>
+<tr>
+<td>TC-08</td>
+<td>Driver input during the hop</td>
+<td>Mode confusion</td>
+<td>Unexpected manoeuvre</td>
+<td>Driver inputs ignored in Hop mode except abort</td>
+</tr>
+<tr>
+<td>TC-09</td>
+<td>Nozzle thrust scatter above the 3% (1σ) modelled in Sim 4</td>
+<td>Allocation error</td>
+<td>Drift and roll error</td>
+<td>Closed-loop thrust estimation; thrust-stand calibration</td>
+</tr>
+<tr>
+<td>TC-10</td>
+<td>Landing surface slope or step</td>
+<td>Landing law assumes level ground</td>
+<td>Roll on touchdown</td>
+<td>Landing pad specification</td>
+</tr>
+</tbody>
+</table>
+<h2>9.2 Known unsafe scenarios found so far</h2>
+<p>Sim 4 found no bad outcomes in 2,186 fault-free hops under random fill, temperature, mass, centre-of-gravity, gust and thrust scatter once the reserve check was in place. Without the reserve check, 21% of fault-free hops ran out of gas: that was the largest SOTIF finding of this study and led directly to TSR-10.</p>
+<h2>9.3 Acceptance criterion and validation target</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Acceptance criterion</td>
+<td>Fewer than 10⁻⁷ catastrophic outcomes per hop from SOTIF causes, the same as for random hardware faults</td>
+</tr>
+<tr>
+<td>Evidence today</td>
+<td>Zero bad outcomes in 2,186 fault-free simulated hops gives an upper bound of 1.4 × 10⁻³ per hop at 95% confidence</td>
+</tr>
+<tr>
+<td>Validation target</td>
+<td>About 3 × 10⁷ hop-equivalents with no catastrophic outcome (zero-event rule: n ≥ 3 / 10⁻⁷)</td>
+</tr>
+<tr>
+<td>How to get there</td>
+<td>Mostly simulation with importance sampling of the triggering conditions above, anchored by about 10³ instrumented physical hops that validate the models</td>
+</tr>
+</tbody>
+</table>
+<h2>9.4 Validation strategy</h2>
+<ol>
+<li><strong>Model validation.</strong> Thrust-stand tests of each nozzle and of nozzle groups near the ground; tank blowdown tests at cold and hot fills; drop tests for the landing model.</li>
+<li><strong>Scenario-based simulation.</strong> A 6-degree-of-freedom model, validated in step 1, run over the triggering-condition space with importance sampling at the edges (gust in the roll, cold gas, mass offset).</li>
+<li><strong>HIL.</strong> The real thrust control unit and safety monitor in closed loop with the validated model.</li>
+<li><strong>Tethered hops.</strong> Physical hops on a crane tether with an empty cabin, then with ballast, then with a test pilot.</li>
+<li><strong>Field monitoring.</strong> Every hop logged; any recovery, refusal or limit exceedance reviewed.</li>
+</ol>
+<h1>10. Cybersecurity concept</h1>
+<p>A thrust system is a cybersecurity problem with physical consequences: a successful attack on it can fire jets on a public road. The analysis follows ISO/SAE 21434 and is designed to support a UN R155 type approval and a UN R156 software-update management system.</p>
+<h2>10.1 Assets</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Asset</th>
+<th>Property to protect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>Thrust commands and valve states</td>
+<td>Integrity, availability in flight</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>Mode and arming state</td>
+<td>Integrity</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>Zone authorisation (satellite fix, beacon)</td>
+<td>Integrity, authenticity</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>Thrust-domain software and calibration</td>
+<td>Integrity, authenticity</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>Cryptographic keys</td>
+<td>Confidentiality, integrity</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>Gas state and fill commands</td>
+<td>Integrity</td>
+</tr>
+<tr>
+<td>A7</td>
+<td>Flight and location logs</td>
+<td>Confidentiality</td>
+</tr>
+<tr>
+<td>A8</td>
+<td>Update packages</td>
+<td>Integrity, authenticity</td>
+</tr>
+<tr>
+<td>A9</td>
+<td>Diagnostic and service access</td>
+<td>Integrity, access control</td>
+</tr>
+</tbody>
+</table>
+<h2>10.2 Security architecture</h2>
+<p><img alt="Security zones" src="figures/F08_security_zones.png" /></p>
+<p><em>Figure 7. Security zones: the thrust domain is isolated behind a zonal gateway that passes only three signal types; connectivity and infotainment have no path to it.</em></p>
+<h2>10.3 Damage scenarios</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Damage scenario</th>
+<th>Impact</th>
+<th>Linked safety goal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DS1</td>
+<td>Thrusters fire on a public road or near people</td>
+<td>Severe</td>
+<td>SG1</td>
+</tr>
+<tr>
+<td>DS2</td>
+<td>Loss of control during a hop</td>
+<td>Severe</td>
+<td>SG6</td>
+</tr>
+<tr>
+<td>DS3</td>
+<td>Thrust enabled outside an authorised zone</td>
+<td>Severe</td>
+<td>SG1, SG7</td>
+</tr>
+<tr>
+<td>DS4</td>
+<td>COPV over-pressure or rupture while filling</td>
+<td>Severe</td>
+<td>SG2</td>
+</tr>
+<tr>
+<td>DS5</td>
+<td>Fleet-wide unsafe or disabling software</td>
+<td>Severe</td>
+<td>SG1, SG6</td>
+</tr>
+<tr>
+<td>DS6</td>
+<td>Vehicle held to ransom; thrust unavailable</td>
+<td>Major</td>
+<td>-</td>
+</tr>
+<tr>
+<td>DS7</td>
+<td>Owner removes safety limits</td>
+<td>Severe</td>
+<td>SG1, SG6, SG7</td>
+</tr>
+<tr>
+<td>DS8</td>
+<td>Location and flight logs exposed</td>
+<td>Major</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h2>10.4 Threat analysis and risk assessment</h2>
+<p>Attack feasibility uses the attack-potential method of ISO/SAE 21434 Annex G. Five factors are scored: elapsed time, specialist expertise, knowledge of the item, window of opportunity and equipment. A total of 0–13 points is High feasibility, 14–19 Medium, 20–24 Low and 25 or more Very low. Risk value (1–5) comes from impact and feasibility. Residual risk above 3 is not accepted, and the traceability check enforces this rule.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Threat scenario</th>
+<th>Damage</th>
+<th>Impact</th>
+<th>Factors before</th>
+<th>Feasibility before</th>
+<th>Risk before</th>
+<th>Controls</th>
+<th>Factors after</th>
+<th>Feasibility after</th>
+<th>Risk after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TS1</td>
+<td>Remote pivot from telematics to thrust command</td>
+<td>DS1</td>
+<td>Severe</td>
+<td>4-6-3-0-4 = 17</td>
+<td>Medium</td>
+<td>4</td>
+<td>CC-01, CC-02</td>
+<td>19-8-7-0-7 = 41</td>
+<td>Very low</td>
+<td>2</td>
+</tr>
+<tr>
+<td>TS2</td>
+<td>Diagnostic-port injection of mode and zone data</td>
+<td>DS1, DS3</td>
+<td>Severe</td>
+<td>1-3-0-1-0 = 5</td>
+<td>High</td>
+<td>5</td>
+<td>CC-01, CC-03</td>
+<td>4-6-3-4-4 = 21</td>
+<td>Low</td>
+<td>3</td>
+</tr>
+<tr>
+<td>TS3</td>
+<td>Satellite spoofing plus beacon replay</td>
+<td>DS3</td>
+<td>Severe</td>
+<td>1-3-0-1-4 = 9</td>
+<td>High</td>
+<td>5</td>
+<td>CC-04, CC-05, CC-13</td>
+<td>4-6-3-4-4 = 21</td>
+<td>Low</td>
+<td>3</td>
+</tr>
+<tr>
+<td>TS4</td>
+<td>Owner reflashes thrust software</td>
+<td>DS7</td>
+<td>Severe</td>
+<td>1-3-0-0-4 = 8</td>
+<td>High</td>
+<td>5</td>
+<td>CC-06, CC-07</td>
+<td>4-8-7-0-4 = 23</td>
+<td>Low</td>
+<td>3</td>
+</tr>
+<tr>
+<td>TS5</td>
+<td>Malicious or tampered software update</td>
+<td>DS1, DS5</td>
+<td>Severe</td>
+<td>4-6-7-4-0 = 21</td>
+<td>Low</td>
+<td>3</td>
+<td>CC-06, CC-08</td>
+<td>19-8-11-10-7 = 55</td>
+<td>Very low</td>
+<td>2</td>
+</tr>
+<tr>
+<td>TS6</td>
+<td>Spoofed fill station commands over-pressure</td>
+<td>DS4</td>
+<td>Severe</td>
+<td>4-3-3-1-4 = 15</td>
+<td>Medium</td>
+<td>4</td>
+<td>CC-09</td>
+<td>19-6-7-4-7 = 43</td>
+<td>Very low</td>
+<td>2</td>
+</tr>
+<tr>
+<td>TS7</td>
+<td>Bus jamming during a hop</td>
+<td>DS2</td>
+<td>Severe</td>
+<td>0-3-0-4-0 = 7</td>
+<td>High</td>
+<td>5</td>
+<td>CC-02, CC-10</td>
+<td>4-6-3-4-4 = 21</td>
+<td>Low</td>
+<td>3</td>
+</tr>
+<tr>
+<td>TS8</td>
+<td>Theft of flight logs from the cloud</td>
+<td>DS8</td>
+<td>Major</td>
+<td>4-6-3-0-4 = 17</td>
+<td>Medium</td>
+<td>3</td>
+<td>CC-11</td>
+<td>4-6-7-0-4 = 21</td>
+<td>Low</td>
+<td>2</td>
+</tr>
+<tr>
+<td>TS9</td>
+<td>Ransomware through infotainment</td>
+<td>DS6</td>
+<td>Major</td>
+<td>4-6-3-0-4 = 17</td>
+<td>Medium</td>
+<td>3</td>
+<td>CC-01, CC-12</td>
+<td>4-6-7-0-4 = 21</td>
+<td>Low</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Attack tree" src="figures/F09_attack_tree.png" /></p>
+<p><em>Figure 8. Attack tree for "thrusters fire on a public road". A faked track zone is the one path that defeats both channels at once, because both trust the same zone data; the independent zone check (CC-13) closes it.</em></p>
+<h2>10.5 Cybersecurity goals</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Cybersecurity goal</th>
+<th>CAL</th>
+<th>Threats</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CG1</td>
+<td>No thrust command or mode change can enter the thrust domain from outside it</td>
+<td>CAL 4</td>
+<td>TS1, TS2</td>
+</tr>
+<tr>
+<td>CG2</td>
+<td>Zone authorisation cannot be faked by spoofing or replay</td>
+<td>CAL 4</td>
+<td>TS3</td>
+</tr>
+<tr>
+<td>CG3</td>
+<td>Only genuine, approved software runs in the thrust domain</td>
+<td>CAL 4</td>
+<td>TS4, TS5</td>
+</tr>
+<tr>
+<td>CG4</td>
+<td>No external party can command a fill above the rated pressure</td>
+<td>CAL 3</td>
+<td>TS6</td>
+</tr>
+<tr>
+<td>CG5</td>
+<td>Loss or jamming of thrust-domain communication never leads to loss of control</td>
+<td>CAL 3</td>
+<td>TS7</td>
+</tr>
+<tr>
+<td>CG6</td>
+<td>Personal data and non-safety functions are protected and segregated</td>
+<td>CAL 2</td>
+<td>TS8, TS9</td>
+</tr>
+</tbody>
+</table>
+<h2>10.6 Cybersecurity controls</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Control</th>
+<th>Goal</th>
+<th>Verified by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CC-01</td>
+<td>Zonal gateway with allowlist: only mode request, zone data and crash signal reach the thrust domain</td>
+<td>CG1, CG6</td>
+<td>VER-03</td>
+</tr>
+<tr>
+<td>CC-02</td>
+<td>Private thrust bus with message authentication, counters and timeouts</td>
+<td>CG1, CG5</td>
+<td>VER-21</td>
+</tr>
+<tr>
+<td>CC-03</td>
+<td>Diagnostic access needs an authenticated service tool and empty tanks</td>
+<td>CG1</td>
+<td>VER-21</td>
+</tr>
+<tr>
+<td>CC-04</td>
+<td>Signed challenge-response track beacon with distance bounding</td>
+<td>CG2</td>
+<td>VER-25</td>
+</tr>
+<tr>
+<td>CC-05</td>
+<td>Positioning plausibility: satellite fix checked against wheel odometry and inertial data</td>
+<td>CG2</td>
+<td>VER-25</td>
+</tr>
+<tr>
+<td>CC-06</td>
+<td>Secure boot with a hardware root of trust in both thrust computers</td>
+<td>CG3</td>
+<td>VER-21</td>
+</tr>
+<tr>
+<td>CC-07</td>
+<td>Tamper detection forces Road-safe mode and logs the event</td>
+<td>CG3</td>
+<td>VER-21</td>
+</tr>
+<tr>
+<td>CC-08</td>
+<td>Signed update packages, anti-rollback; thrust-domain updates only with tanks empty and the car present</td>
+<td>CG3</td>
+<td>VER-21</td>
+</tr>
+<tr>
+<td>CC-09</td>
+<td>Authenticated fill coupling; independent mechanical pressure relief</td>
+<td>CG4</td>
+<td>VER-18</td>
+</tr>
+<tr>
+<td>CC-10</td>
+<td>Communication loss in flight triggers the backup hop law (TSR-22)</td>
+<td>CG5</td>
+<td>VER-23</td>
+</tr>
+<tr>
+<td>CC-11</td>
+<td>Log encryption, data minimisation and retention limits</td>
+<td>CG6</td>
+<td>VER-21</td>
+</tr>
+<tr>
+<td>CC-12</td>
+<td>Domain segmentation: infotainment compromise cannot reach chassis or thrust</td>
+<td>CG6</td>
+<td>VER-03</td>
+</tr>
+<tr>
+<td>CC-13</td>
+<td>Safety monitor confirms the zone independently by inertial dead-reckoning from the last trusted beacon fix</td>
+<td>CG2</td>
+<td>VER-25</td>
+</tr>
+</tbody>
+</table>
+<h2>10.7 Operations and post-development</h2>
+<table>
+<thead>
+<tr>
+<th>Activity</th>
+<th>Practice</th>
+<th>Regulation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cybersecurity management system</td>
+<td>Organisation-level processes, roles and audits</td>
+<td>UN R155</td>
+</tr>
+<tr>
+<td>Software update management</td>
+<td>Signed updates; thrust domain updated only with tanks empty and the car present; version records per vehicle</td>
+<td>UN R156</td>
+</tr>
+<tr>
+<td>Vulnerability monitoring</td>
+<td>Supplier bulletins, bug bounty, fleet security monitoring</td>
+<td>ISO/SAE 21434 cl. 8</td>
+</tr>
+<tr>
+<td>Incident response</td>
+<td>Fleet-wide remote lockout of thrust functions (to Road-safe only, never to enable)</td>
+<td>ISO/SAE 21434 cl. 13</td>
+</tr>
+<tr>
+<td>End of cybersecurity support</td>
+<td>Thrust functions disabled when support ends</td>
+<td>ISO/SAE 21434 cl. 14</td>
+</tr>
+</tbody>
+</table>
+<p>The remote lockout can only <em>disable</em> thrust. No remote command can enable it, which keeps the incident-response path from becoming an attack path.</p>
+<h1>11. Verification and validation plan</h1>
+<h2>11.1 Strategy</h2>
+<p>Verification asks "did we build it right?" against each requirement. Validation asks "did we build the right thing?" against the safety goals and the acceptance criteria. Both follow the V-model, from analysis at concept stage to vehicle tests.</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Methods</th>
+<th>Main questions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Concept</td>
+<td>FMEA, FMEDA, FTA, DFA, STPA, TARA, simulation</td>
+<td>Is the architecture capable of meeting the goals?</td>
+</tr>
+<tr>
+<td>Component</td>
+<td>Valve, sensor and vessel qualification; burst, cycle, cold and fire tests</td>
+<td>Do parts meet their failure-rate and environmental assumptions?</td>
+</tr>
+<tr>
+<td>Software</td>
+<td>Requirements-based tests, MC/DC coverage for ASIL D parts, static analysis, fuzzing</td>
+<td>Does the code do what the requirements say, and nothing else?</td>
+</tr>
+<tr>
+<td>Integration (HIL)</td>
+<td>Real computers in closed loop with a validated model; fault and attack injection</td>
+<td>Do detection and reaction meet the timing budget?</td>
+</tr>
+<tr>
+<td>Vehicle</td>
+<td>Thrust stand, tethered hops, drop tests, crash tests with charged tanks, track tests</td>
+<td>Does the whole car behave as predicted?</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>Scenario-based simulation at scale, field monitoring</td>
+<td>Is residual risk below 10⁻⁷ per hop?</td>
+</tr>
+</tbody>
+</table>
+<h2>11.2 Verification items</h2>
+<p>Every technical safety requirement and every cybersecurity control has at least one verification item, and every verification item lists what it covers. The table is generated from <code>data/verification.csv</code>.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Covers</th>
+<th>Method</th>
+<th>Pass criterion</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VER-01</td>
+<td>TSR-01, TSR-03</td>
+<td>FMEDA; HIL fault injection; vehicle leak-down test</td>
+<td>SPFM ≥ 99%, LFM ≥ 90%, PMHF &lt; 10 FIT; no gas flow after any single fault</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>VER-02</td>
+<td>TSR-02</td>
+<td>HIL test of every combination of arming inputs</td>
+<td>Arms only when all conditions hold</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-03</td>
+<td>TSR-04, CC-01, CC-12</td>
+<td>Architecture review; penetration test</td>
+<td>No external route to a thrust command</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-04</td>
+<td>TSR-05</td>
+<td>HIL sensor-fault injection</td>
+<td>Any single sensor fault detected</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-05</td>
+<td>TSR-06</td>
+<td>Burst, cycling, fire, drop and impact tests</td>
+<td>Burst ratio ≥ 2.25; all tests passed</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-06</td>
+<td>TSR-07</td>
+<td>Valve timing bench; crash test with charged tanks</td>
+<td>Valves closed ≤ 50 ms; no projectile; no net vent thrust</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-07</td>
+<td>TSR-08</td>
+<td>Track test with controlled skirt leak; HIL</td>
+<td>Limits applied ≤ 100 ms; car stays on line</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-08</td>
+<td>TSR-09</td>
+<td>Sim 3; HIL timing measurement</td>
+<td>≤ 20 ms measured; FTTI ≥ 200 ms confirmed</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>VER-09</td>
+<td>TSR-10</td>
+<td>Sim 4; track test with reduced fill</td>
+<td>No gas-starved landing</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>VER-10</td>
+<td>TSR-11</td>
+<td>Sim 4; HIL</td>
+<td>Leak cases land safely</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>VER-11</td>
+<td>TSR-12</td>
+<td>Sim 2; HIL</td>
+<td>Upright landing after a mid-roll fault</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>VER-12</td>
+<td>TSR-13</td>
+<td>HIL sensor-fault injection</td>
+<td>Single IMU fault masked</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-13</td>
+<td>TSR-14</td>
+<td>Sim 5; instrumented drop tests</td>
+<td>Peak ≤ 15 g from 5 m; no deployment below 1.5 m or on road</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>VER-14</td>
+<td>TSR-15</td>
+<td>Sim 3, Sim 4; thrust stand</td>
+<td>Remaining lift ≥ 1.1 x weight</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>VER-15</td>
+<td>TSR-16</td>
+<td>Diagnostic coverage analysis; HIL</td>
+<td>Coverage ≥ 99.9% for stuck-open and stuck-closed</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>VER-16</td>
+<td>TSR-17</td>
+<td>Sim 4; design study</td>
+<td>≥ 50% roll-braking authority remains</td>
+<td>Gap found</td>
+</tr>
+<tr>
+<td>VER-17</td>
+<td>TSR-18</td>
+<td>Cold-soak and full-discharge tests of COPVs and valves</td>
+<td>No leak, crack or sticking at minimum temperature</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-18</td>
+<td>TSR-19, CC-09</td>
+<td>Fill-station test</td>
+<td>Wet air refused</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-19</td>
+<td>TSR-20</td>
+<td>Sim 3 sweep; HIL</td>
+<td>No bad outcomes at delays ≤ 50 ms</td>
+<td>Gap found</td>
+</tr>
+<tr>
+<td>VER-20</td>
+<td>TSR-02</td>
+<td>Track test with dummy targets in the clear zone</td>
+<td>Arming refused with a target in the zone</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-21</td>
+<td>TSR-04, CC-02, CC-03, CC-06, CC-07, CC-08, CC-11</td>
+<td>Fuzzing, penetration test, code review (CG1-CG3)</td>
+<td>No successful attack at CAL 4 depth</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>VER-22</td>
+<td>TSR-21</td>
+<td>HIL injection of power, coil, switch and computer loss in Hop mode</td>
+<td>No master valve closes within 5 s of any single fault</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>VER-23</td>
+<td>TSR-22, CC-10</td>
+<td>HIL controller-loss injection; extended Sim 2</td>
+<td>Backup takes over ≤ 50 ms; upright landing ≤ 5 m/s</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>VER-24</td>
+<td>TSR-23</td>
+<td>HIL bus-loss injection</td>
+<td>No valve opens unintentionally; attitude held</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>VER-25</td>
+<td>CC-04, CC-05, CC-13</td>
+<td>Spoofing and replay attack on a test track; HIL with simulated satellite and beacon signals</td>
+<td>No arming with a spoofed fix or replayed beacon; monitor flags a zone mismatch within 1 s</td>
+<td>Not started</td>
+</tr>
+</tbody>
+</table>
+<h2>11.3 Test scenarios</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Scenario</th>
+<th>Fault or condition</th>
+<th>Pass criterion</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SC-01</td>
+<td>Public-road drive with a forged arm request</td>
+<td>Arm request injected on the vehicle bus</td>
+<td>No master valve opens</td>
+<td>TSR-01, TSR-02, TSR-04</td>
+</tr>
+<tr>
+<td>SC-02</td>
+<td>Power-on with a leaking master valve</td>
+<td>Seat leak on valve A</td>
+<td>Thrust locked out</td>
+<td>TSR-03</td>
+</tr>
+<tr>
+<td>SC-03</td>
+<td>Stuck-open thruster at the apex</td>
+<td>One nozzle forced open</td>
+<td>Line isolated ≤ 20 ms; upright landing</td>
+<td>TSR-09, TSR-15</td>
+</tr>
+<tr>
+<td>SC-04</td>
+<td>Stuck-closed nozzle during the roll</td>
+<td>One nozzle forced closed at 1.3 s</td>
+<td>Upright landing at ≤ 5 m/s</td>
+<td>TSR-17, TSR-20</td>
+</tr>
+<tr>
+<td>SC-05</td>
+<td>Leak from one vessel group mid-climb</td>
+<td>5 kg/s leak</td>
+<td>Recovery starts at once; upright landing</td>
+<td>TSR-10, TSR-11</td>
+</tr>
+<tr>
+<td>SC-06</td>
+<td>Thrust control unit reset mid-hop</td>
+<td>Controller power removed</td>
+<td>Backup law takes over ≤ 50 ms</td>
+<td>TSR-22</td>
+</tr>
+<tr>
+<td>SC-07</td>
+<td>Supply dip mid-hop</td>
+<td>Low-voltage feed drops for 200 ms</td>
+<td>No master valve closes</td>
+<td>TSR-21</td>
+</tr>
+<tr>
+<td>SC-08</td>
+<td>Valve bus lost mid-hop</td>
+<td>Bus disconnected</td>
+<td>No valve opens unintentionally; attitude held</td>
+<td>TSR-23</td>
+</tr>
+<tr>
+<td>SC-09</td>
+<td>Crash with charged tanks</td>
+<td>Frontal crash test</td>
+<td>Vessels isolated ≤ 50 ms; no projectile; no net vent thrust</td>
+<td>TSR-06, TSR-07</td>
+</tr>
+<tr>
+<td>SC-10</td>
+<td>Satellite spoofing at the track gate</td>
+<td>Fake fix inside the zone</td>
+<td>Arming refused; monitor flags mismatch</td>
+<td>CC-04, CC-05, CC-13</td>
+</tr>
+<tr>
+<td>SC-11</td>
+<td>Hard landing from 5 m</td>
+<td>Drop test with external airbag</td>
+<td>Peak ≤ 15 g</td>
+<td>TSR-14</td>
+</tr>
+<tr>
+<td>SC-12</td>
+<td>Cold refill then immediate hop</td>
+<td>Gas 20 K colder than nominal</td>
+<td>Reserve check corrects for temperature</td>
+<td>TSR-10, TSR-18</td>
+</tr>
+</tbody>
+</table>
+<h2>11.4 Simulation credibility</h2>
+<p>The simulations in this study are concept-stage evidence. Before they can support a release decision they need the following.</p>
+<table>
+<thead>
+<tr>
+<th>Credibility factor</th>
+<th>Status today</th>
+<th>Needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model fidelity</td>
+<td>Planar roll-plane rigid body; lumped tank</td>
+<td>6-degree-of-freedom model with nozzle plume and ground effect</td>
+</tr>
+<tr>
+<td>Parameter basis</td>
+<td>Assumptions A-01 to A-16</td>
+<td>Measured mass properties, thrust-stand and blowdown data</td>
+</tr>
+<tr>
+<td>Code verification</td>
+<td>Energy and momentum checks; deterministic seeds</td>
+<td>Independent review; unit tests against analytic cases</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>None against hardware</td>
+<td>Correlation with tethered hops within agreed tolerances</td>
+</tr>
+<tr>
+<td>Tool qualification</td>
+<td>Open-source Python</td>
+<td>Tool confidence level assessed per ISO 26262-8 cl. 11</td>
+</tr>
+</tbody>
+</table>
+<h2>11.5 Roadmap</h2>
+<p><img alt="V&amp;V roadmap" src="figures/F11_vv_roadmap.png" /></p>
+<p><em>Figure 9. Verification and validation roadmap from this concept study (Sims 1–7) to release.</em></p>
+<h2>11.6 Evidence status</h2>
+<p>Of 25 verification items, 5 have analysis evidence, 6 have simulation evidence, 2 show a gap that needs design work (VER-16, VER-19) and 12 have not started. No physical test evidence exists.</p>
+<h1>12. Traceability</h1>
+<p>Traceability proves that every hazard is covered by a goal, every goal by requirements, every requirement by an architecture element and a test, and every test by a requirement. Two chains are traced.</p>
+<ul>
+<li><strong>Safety:</strong> hazardous event → safety goal → functional safety requirement → technical safety requirement → architecture element → verification item → evidence.</li>
+<li><strong>Security:</strong> damage scenario → threat scenario → cybersecurity goal → control → verification item.</li>
+</ul>
+<p>All links live in one place, the requirements database (<code>tools/requirements_db.py</code>, written out to <code>data/*.csv</code>). The tables in this document are generated from it, so the document and the data cannot drift apart. <code>tools/check_traceability.py</code> checks every link in both directions and fails the build if any link is broken.</p>
+<h2>12.1 Safety trace matrix</h2>
+<table>
+<thead>
+<tr>
+<th>TSR</th>
+<th>Hazards</th>
+<th>Goals</th>
+<th>FSR</th>
+<th>Elements</th>
+<th>Verification</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TSR-01</td>
+<td>HE1, HE2</td>
+<td>SG1</td>
+<td>FSR-1.1</td>
+<td>S4, S9, IF-01, IF-02</td>
+<td>VER-01</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>TSR-02</td>
+<td>HE1, HE2, HE9</td>
+<td>SG1, SG7</td>
+<td>FSR-1.2, FSR-7.1</td>
+<td>S8, S9, S10, IF-05, IF-09</td>
+<td>VER-02, VER-20</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>TSR-03</td>
+<td>HE1, HE2</td>
+<td>SG1</td>
+<td>FSR-1.1</td>
+<td>S4, S8, S9</td>
+<td>VER-01</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>TSR-04</td>
+<td>HE1, HE2</td>
+<td>SG1</td>
+<td>FSR-1.3</td>
+<td>S9, IF-03</td>
+<td>VER-03, VER-21</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>TSR-05</td>
+<td>HE3, HE7, HE8, HE11</td>
+<td>SG2, SG6</td>
+<td>FSR-6.4, FSR-2.1</td>
+<td>S3, S8, IF-07</td>
+<td>VER-04</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>TSR-06</td>
+<td>HE3</td>
+<td>SG2</td>
+<td>FSR-2.1</td>
+<td>S3</td>
+<td>VER-05</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>TSR-07</td>
+<td>HE3</td>
+<td>SG2</td>
+<td>FSR-2.2</td>
+<td>S3, S4, S11, IF-10</td>
+<td>VER-06</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>TSR-08</td>
+<td>HE5</td>
+<td>SG4</td>
+<td>FSR-4.1</td>
+<td>S6, S7, IF-08</td>
+<td>VER-07</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>TSR-09</td>
+<td>HE6, HE7, HE8, HE11</td>
+<td>SG5, SG6</td>
+<td>FSR-5.1, FSR-6.3</td>
+<td>S4, S5, S9, IF-11</td>
+<td>VER-08</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>TSR-10</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.1</td>
+<td>S3, S9</td>
+<td>VER-09</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>TSR-11</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.2</td>
+<td>S9</td>
+<td>VER-10</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>TSR-12</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.2</td>
+<td>S9</td>
+<td>VER-11</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>TSR-13</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.4</td>
+<td>S8, IF-06</td>
+<td>VER-12</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>TSR-14</td>
+<td>HE10</td>
+<td>SG8</td>
+<td>FSR-8.1</td>
+<td>S11</td>
+<td>VER-13</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>TSR-15</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.3</td>
+<td>S5</td>
+<td>VER-14</td>
+<td>Simulated</td>
+</tr>
+<tr>
+<td>TSR-16</td>
+<td>HE1, HE2, HE7, HE8, HE11</td>
+<td>SG1, SG6</td>
+<td>FSR-1.1, FSR-6.3</td>
+<td>S4, S5, S9</td>
+<td>VER-15</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>TSR-17</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.3</td>
+<td>S5, S9</td>
+<td>VER-16</td>
+<td>Gap found</td>
+</tr>
+<tr>
+<td>TSR-18</td>
+<td>HE3</td>
+<td>SG2</td>
+<td>FSR-2.1</td>
+<td>S3, S4, S5</td>
+<td>VER-17</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>TSR-19</td>
+<td>HE3</td>
+<td>SG2</td>
+<td>FSR-2.1</td>
+<td>S2</td>
+<td>VER-18</td>
+<td>Not started</td>
+</tr>
+<tr>
+<td>TSR-20</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.2</td>
+<td>S9</td>
+<td>VER-19</td>
+<td>Gap found</td>
+</tr>
+<tr>
+<td>TSR-21</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.2</td>
+<td>S1, S4, S9</td>
+<td>VER-22</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>TSR-22</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.2</td>
+<td>S9</td>
+<td>VER-23</td>
+<td>Analysis done</td>
+</tr>
+<tr>
+<td>TSR-23</td>
+<td>HE7, HE8, HE11</td>
+<td>SG6</td>
+<td>FSR-6.2</td>
+<td>S9, IF-03, IF-11</td>
+<td>VER-24</td>
+<td>Analysis done</td>
+</tr>
+</tbody>
+</table>
+<h2>12.2 Security trace matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Damage</th>
+<th>Threat</th>
+<th>Goal</th>
+<th>Controls</th>
+<th>Verification</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DS1</td>
+<td>TS1</td>
+<td>CG1 (CAL 4)</td>
+<td>CC-01, CC-02</td>
+<td>VER-03, VER-21</td>
+<td>4 → 2</td>
+</tr>
+<tr>
+<td>DS1, DS3</td>
+<td>TS2</td>
+<td>CG1 (CAL 4)</td>
+<td>CC-01, CC-03</td>
+<td>VER-03, VER-21</td>
+<td>5 → 3</td>
+</tr>
+<tr>
+<td>DS3</td>
+<td>TS3</td>
+<td>CG2 (CAL 4)</td>
+<td>CC-04, CC-05, CC-13</td>
+<td>VER-25</td>
+<td>5 → 3</td>
+</tr>
+<tr>
+<td>DS7</td>
+<td>TS4</td>
+<td>CG3 (CAL 4)</td>
+<td>CC-06, CC-07</td>
+<td>VER-21</td>
+<td>5 → 3</td>
+</tr>
+<tr>
+<td>DS1, DS5</td>
+<td>TS5</td>
+<td>CG3 (CAL 4)</td>
+<td>CC-06, CC-08</td>
+<td>VER-21</td>
+<td>3 → 2</td>
+</tr>
+<tr>
+<td>DS4</td>
+<td>TS6</td>
+<td>CG4 (CAL 3)</td>
+<td>CC-09</td>
+<td>VER-18</td>
+<td>4 → 2</td>
+</tr>
+<tr>
+<td>DS2</td>
+<td>TS7</td>
+<td>CG5 (CAL 3)</td>
+<td>CC-02, CC-10</td>
+<td>VER-21, VER-23</td>
+<td>5 → 3</td>
+</tr>
+<tr>
+<td>DS8</td>
+<td>TS8</td>
+<td>CG6 (CAL 2)</td>
+<td>CC-11</td>
+<td>VER-21</td>
+<td>3 → 2</td>
+</tr>
+<tr>
+<td>DS6</td>
+<td>TS9</td>
+<td>CG6 (CAL 2)</td>
+<td>CC-01, CC-12</td>
+<td>VER-03</td>
+<td>3 → 2</td>
+</tr>
+</tbody>
+</table>
+<h2>12.3 Automated check</h2>
+<p>The output below was produced by the build that made this document.</p>
+<pre><code>hazards 11, goals 8, FSR 14, TSR 23, elements 22, verification items 25
+damage scenarios 8, threats 9, cybersecurity goals 6, controls 13
+verification status: Analysis done 5, Gap found 2, Not started 12, Simulated 6
+out of scope: FSR-3.1
+traceability check passed: every link resolves
+</code></pre>
+<p><strong>Rules the check enforces.</strong></p>
+<ol>
+<li>Every hazardous event names a safety goal that exists, and every safety goal has at least one hazardous event.</li>
+<li>Every safety goal has at least one functional safety requirement.</li>
+<li>Every functional safety requirement is refined by a technical safety requirement, or is explicitly allocated to another item (FSR-3.1, steering).</li>
+<li>Every technical safety requirement is allocated to an architecture element that exists, and names a verification item that exists and lists it back.</li>
+<li>Every threat scenario names damage scenarios, a cybersecurity goal and controls that exist, and has residual risk 3 or below.</li>
+<li>Every cybersecurity goal has a threat and a control; every control treats a threat and names a verification item that lists it back.</li>
+<li>Every verification item covers only requirements or controls that exist.</li>
+</ol>
+<h1>13. Safety case, regulation, review record and open issues</h1>
+<h2>13.1 Safety case structure</h2>
+<p><img alt="Safety case" src="figures/F10_safety_case_gsn.png" /></p>
+<p><em>Figure 10. Safety case in goal structuring notation. The top claim (G0) is that the hop and boost functions are acceptably safe within the operating domain. Strategy S1 argues over each safety goal, SOTIF and cybersecurity.</em></p>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Status</th>
+<th>Evidence today</th>
+<th>Evidence still needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1 SG1–SG3 are met</td>
+<td>Supported at concept stage</td>
+<td>FMEDA and cut sets (Sim 7): SPFM 100%, LFM 98.7%, PMHF 0.006 FIT</td>
+<td>HIL fault injection; DFA with test data; steering item's own case (SG3)</td>
+</tr>
+<tr>
+<td>G2 SG4–SG8 are met</td>
+<td>Partly supported</td>
+<td>Sims 2–5: recover-then-cut, reserve check, airbag loads</td>
+<td>SG6 per-hop risk 3.3 × 10⁻⁷ against a 10⁻⁷ target; track tests</td>
+</tr>
+<tr>
+<td>G3 SOTIF residual risk is at most 10⁻⁷ per hop</td>
+<td>Not supported</td>
+<td>Sim 4 bounds it at 1.4 × 10⁻³ per hop</td>
+<td>Validated model and rare-event simulation campaign</td>
+</tr>
+<tr>
+<td>G4 Residual cyber risk is 3 or below</td>
+<td>Supported at concept stage</td>
+<td>TARA with 13 controls</td>
+<td>Penetration tests (VER-21, VER-25)</td>
+</tr>
+</tbody>
+</table>
+<h2>13.2 Regulatory pathway</h2>
+<p>No regulation today covers a road car that fires thrusters or leaves the ground. The likely path is to keep the two worlds separate.</p>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Situation</th>
+<th>Likely route</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Road type approval (US FMVSS, EU, UN)</td>
+<td>No standard addresses thrusters, stored compressed air for propulsion or external airbags</td>
+<td>Road-legal trims with thrust physically disabled in Road-safe mode; Rocket trim sold as not approved for public road use, as Tesla already states [B9]</td>
+</tr>
+<tr>
+<td>Pressure vessels</td>
+<td>Compressed-air propulsion vessels on cars have no dedicated rule</td>
+<td>Qualify to the closest standards: UN GTR 13 and UN R134 (hydrogen vessels), UN R110 (CNG) and ISO 11119-3 (composite cylinders)</td>
+</tr>
+<tr>
+<td>Aviation (FAA, EASA)</td>
+<td>Whether a few-second hop counts as flight is unresolved</td>
+<td>Operate only at closed sites under event or test permissions; seek early regulator engagement</td>
+</tr>
+<tr>
+<td>Cybersecurity and updates</td>
+<td>UN R155 and R156 apply to type-approved vehicles</td>
+<td>Apply both to all trims</td>
+</tr>
+<tr>
+<td>Track use</td>
+<td>Track operators set their own rules</td>
+<td>Site procedures, clear zones and marshals, written into the operating domain</td>
+</tr>
+</tbody>
+</table>
+<h2>13.3 Independent review record</h2>
+<p>This issue was reviewed against the earlier issues and the public sources. Each finding below has been closed in this document.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Finding</th>
+<th>Correction</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RV-01</td>
+<td>Fill pressure of 600 bar mixed up the 600 L volume with pressure</td>
+<td>400 bar adopted, consistent with the 250 kg gas figure</td>
+<td>Ch. 5, A-05</td>
+</tr>
+<tr>
+<td>RV-02</td>
+<td>Burst energy over-stated at 90 MJ</td>
+<td>Recalculated: about 60 MJ (about 14 kg TNT)</td>
+<td>Ch. 5</td>
+</tr>
+<tr>
+<td>RV-03</td>
+<td>Launch gas use over-stated at 57–84 kg</td>
+<td>Recalculated: 32–46 kg (0.9 s) and 46–67 kg (0.59 s)</td>
+<td>Ch. 5</td>
+</tr>
+<tr>
+<td>RV-04</td>
+<td>Normally closed valves drop the car if power or a computer is lost mid-hop</td>
+<td>TSR-21 to TSR-23 added; E/E architecture updated</td>
+<td>Ch. 4, 7, 8</td>
+</tr>
+<tr>
+<td>RV-05</td>
+<td>Both channels trusted the same zone data, a common-mode attack path</td>
+<td>Independent zone confirmation CC-13 and AD-09 added</td>
+<td>Ch. 4, 10</td>
+</tr>
+<tr>
+<td>RV-06</td>
+<td>ASIL B for SG6 looked too low for a flight-like manoeuvre</td>
+<td>Rationale written; FHA target 10⁻⁷ per hop added as a quantitative requirement</td>
+<td>Ch. 6</td>
+</tr>
+<tr>
+<td>RV-07</td>
+<td>Coarse FMEDA (Sim 6) not at component level</td>
+<td>Superseded by component-level cut-set FMEDA (Sim 7)</td>
+<td>Ch. 8</td>
+</tr>
+<tr>
+<td>RV-08</td>
+<td>First PMHF result was implausibly small because common-cause faults were missing</td>
+<td>β-factor common-cause events added</td>
+<td>Ch. 8, A-14</td>
+</tr>
+<tr>
+<td>RV-09</td>
+<td>"SpaceX-built" overstated the sources</td>
+<td>Changed to "developed with SpaceX"</td>
+<td>Ch. 1, 2</td>
+</tr>
+<tr>
+<td>RV-10</td>
+<td>Single-source facts presented as confirmed</td>
+<td>Each fact tagged with its source; unconfirmed items marked</td>
+<td>Ch. 2, App. B</td>
+</tr>
+<tr>
+<td>RV-11</td>
+<td>Requirements, trace and tables kept in several places could drift</td>
+<td>One requirements database; document tables generated from it; automated two-way link check</td>
+<td>Ch. 12</td>
+</tr>
+</tbody>
+</table>
+<h2>13.4 Open issues</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Issue</th>
+<th>Owner action</th>
+<th>Blocks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OI-01</td>
+<td>SG6 per-hop risk 3.3 × 10⁻⁷ is above the 10⁻⁷ target</td>
+<td>Individually controlled nozzles (TSR-17), better recovery planner (TSR-20)</td>
+<td>Release</td>
+</tr>
+<tr>
+<td>OI-02</td>
+<td>SOTIF residual risk not demonstrated</td>
+<td>Validated 6-degree-of-freedom model and scenario campaign (ch. 9)</td>
+<td>Release</td>
+</tr>
+<tr>
+<td>OI-03</td>
+<td>Stuck-closed nozzle during the roll fails about one case in three</td>
+<td>Design study for nozzle layout and roll authority</td>
+<td>Release</td>
+</tr>
+<tr>
+<td>OI-04</td>
+<td>Failure rates and β-factors are assumed</td>
+<td>Supplier FMEDA data; DFA with test data</td>
+<td>Safety case G1</td>
+</tr>
+<tr>
+<td>OI-05</td>
+<td>Cold-gas effects on valves and seals unknown</td>
+<td>Full-discharge cold tests</td>
+<td>Safety case G1</td>
+</tr>
+<tr>
+<td>OI-06</td>
+<td>Regulatory classification of a hop</td>
+<td>Early engagement with road and aviation regulators</td>
+<td>Market entry</td>
+</tr>
+<tr>
+<td>OI-07</td>
+<td>No requirement stops thrust after touchdown (UCA-8)</td>
+<td>Add a landing-detection requirement in the next issue</td>
+<td>Next issue</td>
+</tr>
+<tr>
+<td>OI-08</td>
+<td>A fall from 6 m gives 16.5 g even with external airbags, above the 15 g criterion; the operating domain allows a 6 m apex</td>
+<td>Cut the apex limit to 5 m (14 g) or improve the landing system</td>
+<td>Operating domain</td>
+</tr>
+</tbody>
+</table>
+<h1>14. Simulation report</h1>
+<p>Seven simulations support the analysis. They are deliberately simple, so anyone can read, run and challenge them: about 1,400 lines of Python using NumPy and Matplotlib, all in <code>sim/</code>. <code>python sim/run_all.py</code> reproduces every number and chart in this chapter in under two minutes on a laptop. Random seeds are fixed, so results are repeatable.</p>
+<h2>14.1 Common model</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vehicle</td>
+<td>Planar rigid body in the roll plane: height, lateral position and roll angle, 1,850 kg, 600 kg·m² (A-01, A-02)</td>
+</tr>
+<tr>
+<td>Thrusters</td>
+<td>Four lift groups of 9 kN at ±0.35 m and ±0.85 m from the centreline (A-06); first-order valve lag; ±3% thrust scatter</td>
+</tr>
+<tr>
+<td>Gas</td>
+<td>Adiabatic blowdown of a lumped tank with real-gas density, regulated 40 bar feed, specific impulse falling with gas temperature (A-05, A-07, A-08)</td>
+</tr>
+<tr>
+<td>Guidance</td>
+<td>Reference hop: climb to 4.5 m in 1.3 s, 360° roll near the apex, descent at up to 4 m/s slowing to 0.8 m/s near the ground</td>
+</tr>
+<tr>
+<td>Control</td>
+<td>PD attitude and height control with feed-forward; torque-first allocation to the available groups (A-10)</td>
+</tr>
+<tr>
+<td>Faults</td>
+<td>Stuck-open, stuck-closed or leaking group at any time; detection delay as a parameter</td>
+</tr>
+<tr>
+<td>Monitor strategies</td>
+<td>None; cut all gas; isolate the faulty group and recover</td>
+</tr>
+<tr>
+<td>Outcome</td>
+<td>Safe if the car lands with roll below 30° and vertical speed below 5 m/s</td>
+</tr>
+</tbody>
+</table>
+<h2>14.2 Sim 1: gas budget</h2>
+<p><img alt="Gas budget" src="figures/fig1_gas_budget.png" /></p>
+<p><em>Figure 11. Tank pressure, gas temperature and usable thrust during a full-tank hover.</em></p>
+<p>A full bank of 244 kg at 400 bar holds the car in a hover for 6.7 s. Pressure falls to 28 bar and gas temperature to 142 K. Specific impulse falls from 69 s to 48 s as the gas cools. The reference hop needs 134 kg (55% of the fill). Stored burst energy is 60 MJ, about 14 kg of TNT.</p>
+<h2>14.3 Sim 2: stuck-open valve, three monitor strategies</h2>
+<p><img alt="Stuck valve" src="figures/fig2_stuck_valve.png" /></p>
+<p><em>Figure 12. Roll angle and height after an outer lift group sticks open at 1.45 s, when the car is nearly inverted.</em></p>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Touchdown</th>
+<th>Roll at touchdown</th>
+<th>Vertical speed</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No fault</td>
+<td>4.15 s</td>
+<td>0°</td>
+<td>1.0 m/s</td>
+<td>Safe</td>
+</tr>
+<tr>
+<td>Fault not detected</td>
+<td>2.69 s</td>
+<td>−49°</td>
+<td>11.8 m/s</td>
+<td>Unsafe</td>
+</tr>
+<tr>
+<td>Cut all gas</td>
+<td>2.74 s</td>
+<td>152° (on the roof)</td>
+<td>10.6 m/s</td>
+<td>Unsafe</td>
+</tr>
+<tr>
+<td>Isolate the line and recover</td>
+<td>3.34 s</td>
+<td>0°</td>
+<td>3.9 m/s</td>
+<td>Safe</td>
+</tr>
+</tbody>
+</table>
+<p>Cutting all gas, the classic "safe state", lands the car on its roof. This single result drives AD-03 and TSR-12.</p>
+<h2>14.4 Sim 3: fault tolerant time interval</h2>
+<p><img alt="FTTI" src="figures/fig3_ftti.png" /></p>
+<p><em>Figure 13. Share of bad outcomes against detection-plus-isolation delay, over fault times from 0.6 s to 3.0 s.</em></p>
+<table>
+<thead>
+<tr>
+<th>Lift group</th>
+<th>Bad at 20 ms</th>
+<th>Bad at 100 ms</th>
+<th>Bad at 300 ms</th>
+<th>Delay where bad outcomes pass 10%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9 kN</td>
+<td>4.1%</td>
+<td>2.0%</td>
+<td>20.4%</td>
+<td>200 ms</td>
+</tr>
+<tr>
+<td>11 kN</td>
+<td>2.0%</td>
+<td>0%</td>
+<td>0%</td>
+<td>440 ms</td>
+</tr>
+</tbody>
+</table>
+<p>The FTTI is about 200 ms with 9 kN groups, so a 20 ms budget leaves a tenfold margin. The residual bad outcomes at short delays come from faults in the middle of the roll, where the recovery planner sometimes chooses the longer way back to level. That is the gap recorded against TSR-20. Larger 11 kN groups remove almost all stuck-open failures.</p>
+<h2>14.5 Sim 4: Monte Carlo over 12,000 hops</h2>
+<p><img alt="Monte Carlo" src="figures/fig4_monte_carlo.png" /></p>
+<p><em>Figure 14. Bad-outcome rates for four architecture options over the same 12,000 random draws.</em></p>
+<p>Each draw varies fill (40–100%), gas temperature, mass, inertia, centre of gravity, gusts and thrust scatter, and injects a stuck-open, leak or stuck-closed fault at an elevated rate so that each fault type gets enough samples.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Hops refused</th>
+<th>Bad per flown hop</th>
+<th>Bad, no fault</th>
+<th>Bad given stuck open</th>
+<th>Bad given leak</th>
+<th>Bad given stuck closed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A: no reserve check, cut on fault</td>
+<td>0%</td>
+<td>31.6%</td>
+<td>21.2%</td>
+<td>100%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>B: reserve check, cut on fault</td>
+<td>79.1%</td>
+<td>12.7%</td>
+<td>0%</td>
+<td>100%</td>
+<td>100%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>C: reserve check, isolate and recover</td>
+<td>79.1%</td>
+<td>1.6%</td>
+<td>0%</td>
+<td>3.3%</td>
+<td>4.5%</td>
+<td>36.0%</td>
+</tr>
+<tr>
+<td>D: C with 11 kN lift groups</td>
+<td>79.1%</td>
+<td>1.4%</td>
+<td>0%</td>
+<td>0%</td>
+<td>5.4%</td>
+<td>32.6%</td>
+</tr>
+</tbody>
+</table>
+<p>The high refusal rate reflects the deliberately wide fill range: the reference hop needs at least 86% fill. In service the reserve check would offer a lower manoeuvre instead of refusing (AD-08). The two key results are that the reserve check removes gas starvation and that isolating and recovering saves almost every stuck-open and leak case. The stuck-closed result of about one in three is the main open design issue (OI-03).</p>
+<h2>14.6 Sim 5: landing loads</h2>
+<p><img alt="Landing" src="figures/fig5_landing.png" /></p>
+<p><em>Figure 15. Peak deceleration against drop height, suspension alone and with an external airbag.</em></p>
+<table>
+<thead>
+<tr>
+<th>Drop height</th>
+<th>Suspension only, peak</th>
+<th>With airbag, peak</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 m</td>
+<td>17.1 g</td>
+<td>11.3 g</td>
+</tr>
+<tr>
+<td>4 m</td>
+<td>26.4 g</td>
+<td>11.3 g</td>
+</tr>
+<tr>
+<td>5 m</td>
+<td>30.2 g</td>
+<td>14.0 g</td>
+</tr>
+<tr>
+<td>6 m</td>
+<td>33.6 g</td>
+<td>16.5 g</td>
+</tr>
+</tbody>
+</table>
+<p>The airbag's relief vents hold its pressure at 1.8 bar, which caps the peak at about 11 g up to 4 m. Above about 4 m the airbag reaches the end of its stroke and loads rise again. That supports a 5 m limit on apex height (OI-08).</p>
+<h2>14.7 Sim 6: per-hop risk (first FMEDA superseded)</h2>
+<p><img alt="Per-hop risk" src="figures/fig6_per_hop_risk.png" /></p>
+<p><em>Figure 16. Per-hop probability of a bad landing from random faults, for three design options, against the 10⁻⁷ target.</em></p>
+<p>Combining Sim 4's conditional outcomes with fault rates and pre-arm test coverage gives the per-hop risk of a bad landing. With 11 kN groups and a 99.9%-coverage pre-arm valve test it is 3.3 × 10⁻⁷, still above the 10⁻⁷ target; stuck-closed faults dominate. Sim 6 also contains a first, coarse FMEDA, which Sim 7 supersedes.</p>
+<h2>14.8 Sim 7: component FMEA and cut-set FMEDA</h2>
+<p>Sim 7 holds the component DFMEA (31 failure modes, chapter 8.2) and solves the SG1 fault tree for its 36 minimal cut sets. It gives SPFM 100%, LFM 98.7% and PMHF 0.006 FIT, with the computers' common-cause term dominating (Figure 6).</p>
+<h2>14.9 Limits of the models</h2>
+<ul>
+<li>Planar model: no pitch or yaw coupling, no lateral wind profile, no plume or ground-effect modelling.</li>
+<li>Lumped tank: no temperature gradients, no heat transfer from vessel walls (this makes the gas colder than reality, a conservative assumption for thrust and a non-conservative one for valve icing).</li>
+<li>Ideal valves with first-order lag; no valve chatter or water hammer.</li>
+<li>Failure rates, coverages and β-factors are assumed (A-11, A-12, A-14).</li>
+<li>No model has been validated against hardware. The results show <em>relative</em> merits of architecture options; absolute values need test data.</li>
+</ul>
+<h2>14.10 Interactive viewer</h2>
+<p><code>viewer/index.html</code> replays the simulated trajectories in a browser with no installation. It plays 14 precomputed scenarios (the no-fault hop, stuck-open valves with each monitor strategy and several detection delays, stuck-closed valves, leaks, gas starvation and a crosswind gust) and a scan of stuck-closed fault timing that shows the 1.10–1.95 s danger window. A hosted version is the "Roadster Hop Fault Lab".</p>
+<h1>Appendix A. Assumptions register</h1>
+<p>Tesla has not published the design. Every number in this study that is not a disclosed fact (chapter 2) rests on one of the assumptions below. Each has a basis and states what real data would replace it. Changing an assumption and running <code>python sim/run_all.py</code> and <code>python tools/build_docs.py</code> regenerates every affected result.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Parameter</th>
+<th>Value</th>
+<th>Basis</th>
+<th>Replace with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-01</td>
+<td>Vehicle mass</td>
+<td>1,850 kg</td>
+<td>'4,000+ lb' quoted at the reveal (TechCrunch)</td>
+<td>Weighbridge data</td>
+</tr>
+<tr>
+<td>A-02</td>
+<td>Roll inertia</td>
+<td>600 kg m2</td>
+<td>Typical low sports car</td>
+<td>Inertia rig measurement</td>
+</tr>
+<tr>
+<td>A-03</td>
+<td>Gas storage volume</td>
+<td>600 L</td>
+<td>Disclosed by Tesla (L. Moravy)</td>
+<td>-</td>
+</tr>
+<tr>
+<td>A-04</td>
+<td>Gas mass</td>
+<td>250 kg reported; 244 kg modelled</td>
+<td>InsideEVs, single source</td>
+<td>Tesla specification</td>
+</tr>
+<tr>
+<td>A-05</td>
+<td>Fill pressure</td>
+<td>400 bar</td>
+<td>Derived: 250 kg in 600 L at 20 C with Z = 1.17</td>
+<td>COPV rating</td>
+</tr>
+<tr>
+<td>A-06</td>
+<td>Thruster count and layout</td>
+<td>10 nozzles; four lift groups of 9 kN at +/-0.35 and +/-0.85 m</td>
+<td>Count disclosed; layout assumed</td>
+<td>Nozzle layout and thrust-stand data</td>
+</tr>
+<tr>
+<td>A-07</td>
+<td>Thrust coefficient</td>
+<td>1.35</td>
+<td>Typical cold-gas nozzle with losses</td>
+<td>Thrust stand</td>
+</tr>
+<tr>
+<td>A-08</td>
+<td>Regulation</td>
+<td>40 bar feed; full thrust lost below 50 bar tank</td>
+<td>Assumed</td>
+<td>Regulator characterisation</td>
+</tr>
+<tr>
+<td>A-09</td>
+<td>Number of COPVs</td>
+<td>6 vessels in 3 groups</td>
+<td>'Every usable void' implies many vessels</td>
+<td>Design data</td>
+</tr>
+<tr>
+<td>A-10</td>
+<td>Control law</td>
+<td>PD with feed-forward, torque-first allocation</td>
+<td>Assumed</td>
+<td>Production control laws</td>
+</tr>
+<tr>
+<td>A-11</td>
+<td>Component failure rates</td>
+<td>10-300 FIT per part (see component FMEA)</td>
+<td>Representative magnitudes</td>
+<td>Supplier FMEDA data</td>
+</tr>
+<tr>
+<td>A-12</td>
+<td>Diagnostic coverage</td>
+<td>90-99%; pre-arm test 95% or 99.9%</td>
+<td>Assumed</td>
+<td>Diagnostic coverage analysis</td>
+</tr>
+<tr>
+<td>A-13</td>
+<td>Vehicle operating life</td>
+<td>10,000 h</td>
+<td>Typical automotive mission profile</td>
+<td>Programme mission profile</td>
+</tr>
+<tr>
+<td>A-14</td>
+<td>Common-cause shares</td>
+<td>beta = 1% (computers), 2% (master valves)</td>
+<td>Typical beta-factor range for diverse redundancy</td>
+<td>Dependent failure analysis with test data</td>
+</tr>
+<tr>
+<td>A-15</td>
+<td>Operating domain limits</td>
+<td>Wind &lt; 8 m/s (gusts &lt; 12), -10 to +40 C, dry paved surface</td>
+<td>Proposed by this study</td>
+<td>Validated limits</td>
+</tr>
+<tr>
+<td>A-16</td>
+<td>Landing system</td>
+<td>Suspension 140 kN/m, 0.20 m travel; airbag 2.6 m2, 0.5 m stroke, 1.8 bar relief</td>
+<td>Assumed</td>
+<td>Drop tests</td>
+</tr>
+</tbody>
+</table>
+<h1>Appendix B. Sources</h1>
+<p>Public sources for the facts in chapter 2, checked between 15 and 18 October 2026. Facts reported by only one outlet are marked.</p>
+<table>
+<thead>
+<tr>
+<th>Ref</th>
+<th>Source</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[B1]</td>
+<td><a href="https://techcrunch.com/2026/10/15/tesla-reveals-spacex-powered-roadster-that-flies-and-falls-with-style/">TechCrunch: Tesla reveals SpaceX-powered Roadster that flies and falls with style</a></td>
+<td>600 L of compressed air, 10 thrusters, COPVs, remote-operated demonstration, 2028 production</td>
+</tr>
+<tr>
+<td>[B2]</td>
+<td><a href="https://theevreport.com/tesla-roadster-unveil-spacex-cold-gas-thrusters">The EV Report: Tesla Unveils Production Roadster With SpaceX Cold-Gas Thrusters</a></td>
+<td>Trims, suction system, electric actuators, not approved for public roads</td>
+</tr>
+<tr>
+<td>[B3]</td>
+<td><a href="https://insideevs.com/news/812151/2027-tesla-roadster-price-specs-release-date/">InsideEVs: Tesla Just Revealed The Roadster</a></td>
+<td>250 kg of gas, 2G cornering (single source; page unavailable when last checked)</td>
+</tr>
+<tr>
+<td>[B4]</td>
+<td><a href="https://eletric-vehicles.com/tesla/tesla-unveils-thruster-equipped-roadster-sets-production-for-2028/">Eletric-Vehicles.com: Tesla Unveils Thruster-Equipped Roadster</a></td>
+<td>Acceleration figures, production date</td>
+</tr>
+<tr>
+<td>[B5]</td>
+<td><a href="https://www.swisherpost.com/technology/tesla-roadster-unveiled-thrusters-flips-price-production-date/">Swisher Post: Tesla Roadster unveiled</a></td>
+<td>Acceleration figures, price</td>
+</tr>
+<tr>
+<td>[B6]</td>
+<td><a href="https://www.webull.ca/news-detail/15402037474960384">Benzinga via Webull: Tesla Preps SpaceX Rocket-Powered Flying Roadster Demo</a></td>
+<td>A71 code name (unconfirmed)</td>
+</tr>
+<tr>
+<td>[B7]</td>
+<td><a href="https://tesorb.com/?p=3628">Tesorb: pre-reveal report on the A71 system</a></td>
+<td>Pressure range (unconfirmed)</td>
+</tr>
+<tr>
+<td>[B8]</td>
+<td><a href="https://electrek.co/2018/06/09/elon-musk-tesla-next-gen-roadster-spacex-package-rocket-thrusters/">Electrek: Musk says Roadster's SpaceX package will include rocket thrusters (2018)</a></td>
+<td>2018 SpaceX package, about 10 thrusters</td>
+</tr>
+<tr>
+<td>[B9]</td>
+<td><a href="https://gagadget.com/en/725987-tesla-roadster-gets-an-october-1-reveal-musk-wants-witnesses/">Gagadget: Tesla Roadster Gets an October 1 Reveal</a></td>
+<td>Regulatory status</td>
+</tr>
+</tbody>
+</table>
+<h2>Standards referenced</h2>
+<p>ISO 26262:2018 (road vehicles, functional safety), ISO 21448:2022 (SOTIF), ISO/SAE 21434:2021 (cybersecurity engineering), UN Regulations No. 155 and 156, UN GTR No. 13, UN Regulations No. 110 and 134, ISO 11119-3, SAE ARP4761A and ARP4754B, AIAG-VDA FMEA Handbook (2019), STPA Handbook (Leveson and Thomas, 2018), GSN Community Standard v3.</p></body></html>

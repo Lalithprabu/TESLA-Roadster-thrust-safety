@@ -1,0 +1,30 @@
+{
+  "no_fault": {
+    "touchdown_s": 4.15,
+    "roll_at_touchdown_deg": 0.0,
+    "vertical_speed_m_s": -0.98,
+    "outcome": "safe",
+    "gas_used_kg": 134.2
+  },
+  "Undetected": {
+    "touchdown_s": 2.69,
+    "roll_at_touchdown_deg": -49.2,
+    "vertical_speed_m_s": -11.83,
+    "outcome": "unsafe attitude",
+    "gas_used_kg": 104.7
+  },
+  "Cut all gas": {
+    "touchdown_s": 2.74,
+    "roll_at_touchdown_deg": 152.2,
+    "vertical_speed_m_s": -10.57,
+    "outcome": "unsafe attitude",
+    "gas_used_kg": 52.6
+  },
+  "Isolate line, recover": {
+    "touchdown_s": 3.34,
+    "roll_at_touchdown_deg": -0.0,
+    "vertical_speed_m_s": -3.92,
+    "outcome": "safe",
+    "gas_used_kg": 103.3
+  }
+}

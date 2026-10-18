@@ -1,0 +1,9 @@
+id,damage_scenario,impact,safety_goal
+DS1,Thrusters fire on a public road or near people,Severe,SG1
+DS2,Loss of control during a hop,Severe,SG6
+DS3,Thrust enabled outside an authorised zone,Severe,"SG1, SG7"
+DS4,COPV over-pressure or rupture while filling,Severe,SG2
+DS5,Fleet-wide unsafe or disabling software,Severe,"SG1, SG6"
+DS6,Vehicle held to ransom; thrust unavailable,Major,-
+DS7,Owner removes safety limits,Severe,"SG1, SG6, SG7"
+DS8,Location and flight logs exposed,Major,-

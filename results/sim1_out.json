@@ -1,0 +1,15 @@
+{
+  "fill_pressure_bar": 400.0,
+  "gas_mass_kg": 244.2,
+  "hover_endurance_s": 6.72,
+  "gas_used_hover_kg": 204.1,
+  "end_pressure_bar": 27.6,
+  "end_temperature_K": 142.3,
+  "isp_start_s": 69.0,
+  "isp_end_s": 48.1,
+  "reference_hop_gas_kg": 134.2,
+  "reference_hop_duration_s": 4.15,
+  "burst_energy_MJ": 59.8,
+  "burst_energy_kg_TNT": 14.3,
+  "refill_energy_ideal_kWh": 34.1
+}
