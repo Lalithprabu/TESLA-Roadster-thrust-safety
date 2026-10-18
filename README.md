@@ -149,10 +149,6 @@ If you change an assumption, rerun the three commands above so every table and f
 
 GitHub's **"Cite this repository"** button (right-hand side) uses [`CITATION.cff`](CITATION.cff).
 
-## Licence and authorship
+## Licence
 
 Code: MIT ([LICENSE](LICENSE)). Documents, figures and data: CC BY 4.0 ([LICENSE-docs.md](LICENSE-docs.md)).
-
-**Author:** [Lalith Prabu](https://github.com/Lalithprabu). Prepared with AI assistance (Claude by Anthropic) and reviewed by the author before release. Independent educational analysis; not for use in any real vehicle.
-
-<div align="center"><sub>If this helped you, a ⭐ makes it easier for other engineers to find.</sub></div>
