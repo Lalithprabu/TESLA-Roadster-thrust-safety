@@ -57,6 +57,21 @@ def build_viewer():
         f.write(page)
 
 
+def build_game():
+    """Reaction-time game: the study's hop simulator, one stuck-open valve, a person as the monitor."""
+    import export_game
+    data = json.dumps(export_game.build(), separators=(",", ":"))
+    with open(os.path.join(HERE, "game_template.html"), encoding="utf-8") as f:
+        tpl = f.read()
+    page = (HEAD + tpl).replace("__DATA__", data)
+    left = re.findall(r"__[A-Z]+__", page)
+    if left:
+        raise SystemExit(f"game placeholders not filled: {left}")
+    os.makedirs(VIEWER, exist_ok=True)
+    with open(os.path.join(VIEWER, "play.html"), "w", encoding="utf-8") as f:
+        f.write(page)
+
+
 if __name__ == "__main__":
     t0 = time.time()
     os.makedirs(RESULTS, exist_ok=True)
@@ -69,4 +84,6 @@ if __name__ == "__main__":
             json.dump(result, f, indent=2, default=str)
     print("building viewer ...", flush=True)
     build_viewer()
-    print(f"done in {time.time() - t0:.0f} s: results/ and viewer/index.html")
+    print("building game ...", flush=True)
+    build_game()
+    print(f"done in {time.time() - t0:.0f} s: results/, viewer/index.html and viewer/play.html")

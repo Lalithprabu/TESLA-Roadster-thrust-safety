@@ -7,6 +7,7 @@
 **An open, independent safety and security study of the cold-gas thruster "hop" revealed on the Tesla Roadster, 15 October 2026.**
 Architecture · ISO 26262 · ISO 21448 · ISO/SAE 21434 · 7 simulations you can rerun.
 
+[![Play](https://img.shields.io/badge/PLAY-Could_you_save_the_Roadster%3F-ff6a3d?style=for-the-badge)](https://lalithprabu.github.io/TESLA-Roadster-thrust-safety/viewer/play.html)
 [![Document](https://img.shields.io/badge/Document-47_pages-2f81f7?style=for-the-badge)](docs/RTS-SSC-001.pdf)
 [![Viewer](https://img.shields.io/badge/Live_fault_viewer-open-2fd39a?style=for-the-badge)](https://lalithprabu.github.io/TESLA-Roadster-thrust-safety/viewer/)
 [![Simulations](https://img.shields.io/badge/Simulations-7_runnable-ff6a3d?style=for-the-badge)](sim/)
@@ -23,6 +24,12 @@ Architecture · ISO 26262 · ISO 21448 · ISO/SAE 21434 · 7 simulations you can
 <img src="docs/assets/hero.gif" alt="Same fault, two safety reactions: cutting all gas flips the car, isolating the failed line lands it upright" width="520">
 
 <sub>The same stuck-open valve, two safety reactions. Left: the textbook "cut all gas". Right: isolate the line and recover. Simulation 2, played at half speed.</sub>
+
+
+<br>
+
+### 🎮 [Could you save the Roadster? Test your fault reaction time →](https://lalithprabu.github.io/TESLA-Roadster-thrust-safety/viewer/play.html)
+A valve sticks open mid-hop. The car has about 200 ms. The safety computer needs 20 ms. How fast are you?
 
 </div>
 
@@ -78,6 +85,7 @@ Architecture · ISO 26262 · ISO 21448 · ISO/SAE 21434 · 7 simulations you can
 | --- | --- |
 | **The full 47-page document** | [`docs/RTS-SSC-001.pdf`](docs/RTS-SSC-001.pdf) or [`docs/RTS-SSC-001.md`](docs/RTS-SSC-001.md) to read on GitHub |
 | **The system architecture** | Chapter 4: logical, functional, E/E, interfaces, modes, timing budget, decision record |
+| **To test your own fault reaction time** | [Play the game](https://lalithprabu.github.io/TESLA-Roadster-thrust-safety/viewer/play.html), 30 seconds, no install |
 | **To watch the hop and its failures** | [Live fault viewer](https://lalithprabu.github.io/TESLA-Roadster-thrust-safety/viewer/), runs in any browser, nothing to install |
 | **The requirements and trace data** | [`data/`](data/), CSV generated from [`tools/requirements_db.py`](tools/requirements_db.py) |
 | **The simulation outputs** | [`results/`](results/): charts, JSON, component FMEA, cut sets |
@@ -101,7 +109,7 @@ Every table in the document is generated from [`tools/requirements_db.py`](tools
 
 ```bash
 pip install -r requirements.txt
-python sim/run_all.py                # about 1 minute: results/ and viewer/
+python sim/run_all.py                # about 1 minute: results/, viewer/index.html and viewer/play.html
 python tools/check_traceability.py   # every safety and security link, both directions
 python tools/build_docs.py           # docs/RTS-SSC-001.md, .html and .pdf
 ```
@@ -126,6 +134,7 @@ tools/
 sim/                              Sims 1-7, shared model, viewer template, run_all.py
 results/                          simulation outputs
 viewer/index.html                 animated fault viewer (generated)
+viewer/play.html                  reaction-time game built on the same simulator (generated)
 ```
 </details>
 

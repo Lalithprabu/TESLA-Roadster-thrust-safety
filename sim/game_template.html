@@ -1,0 +1,534 @@
+<title>Could you save the Roadster?</title>
+<meta name="description" content="A thruster valve sticks open mid-hop. Test your fault reaction time against the 200 ms the car has before it is lost. Built on an open ISO 26262 safety study.">
+<meta property="og:title" content="Could you save the Roadster? Test your fault reaction time">
+<meta property="og:description" content="A thruster valve sticks open mid-hop. The car has about 200 ms. The safety computer needs 20 ms. How fast are you?">
+<meta property="og:image" content="https://lalithprabu.github.io/TESLA-Roadster-thrust-safety/docs/assets/banner.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0e1316">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --bg:#0e1316; --panel:#151c20; --line:#26303a; --ink:#f3f1ec; --muted:#9aa4a8;
+  --red:#ff6a3d; --green:#2fd39a; --blue:#7cc4ff; --amber:#ffb84d;
+  --f:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.45;
+  padding:20px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
+.app{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+h1{font-size:clamp(30px,6.4vw,50px);line-height:1.04;letter-spacing:-.02em;margin:6px 0 10px;font-weight:800;text-wrap:balance}
+h1 em{font-style:normal;color:var(--red)}
+.lede{color:var(--muted);margin:0;max-width:60ch;font-size:clamp(15px,2.4vw,18px)}
+.lede b{color:var(--ink);font-weight:600}
+a{color:var(--blue)}
+button{font-family:inherit}
+
+/* stage */
+.stage{position:relative;border-radius:16px;overflow:hidden;background:var(--panel);border:1px solid var(--line);
+  user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+canvas{display:block;width:100%;aspect-ratio:8.8/8.4;height:auto}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);min-height:62px}
+.chip{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:#0e1316;
+  border:1px solid var(--line);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.timer{font-variant-numeric:tabular-nums;text-align:right;min-width:150px}
+.timer small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.timer b{font-size:26px;font-weight:800;letter-spacing:-.01em;line-height:1.1}
+.bar{height:6px;border-radius:3px;background:#26303a;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--green)}
+.fault{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:var(--red);color:#1a0d08;font-weight:800;
+  letter-spacing:.04em;text-transform:uppercase;padding:9px 18px;border-radius:10px;font-size:clamp(14px,3.2vw,20px);white-space:nowrap;
+  pointer-events:none;animation:blink .5s steps(2) infinite}
+@keyframes blink{50%{opacity:.55}}
+.overlay{position:absolute;inset:0;top:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;
+  padding:24px;background:linear-gradient(#0e1316d9,#0e1316f2)}
+.overlay h2{margin:0;font-size:clamp(22px,5vw,34px);letter-spacing:-.01em}
+.overlay p{margin:0;color:var(--muted);max-width:44ch}
+.overlay ol{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;max-width:46ch;text-align:left;counter-reset:s}
+.overlay li{counter-increment:s;padding-left:34px;position:relative;color:var(--muted);font-size:15px}
+.overlay li::before{content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--panel);
+  border:1px solid var(--line);color:var(--ink);font-size:13px;font-weight:700;display:grid;place-items:center}
+.overlay li b{color:var(--ink);font-weight:600}
+.outcome{position:absolute;left:0;right:0;top:40%;text-align:center;pointer-events:none}
+.outcome b{display:block;font-size:clamp(28px,7vw,52px);font-weight:800;letter-spacing:-.02em;line-height:1}
+.outcome span{display:block;margin-top:6px;font-size:clamp(14px,3vw,18px);color:var(--ink)}
+.good{color:var(--green)} .bad{color:var(--red)} .mid{color:var(--amber)}
+
+.act{all:unset;box-sizing:border-box;width:100%;text-align:center;cursor:pointer;font-weight:800;letter-spacing:.03em;text-transform:uppercase;
+  font-size:clamp(17px,4.4vw,24px);padding:20px 16px;border-radius:14px;background:var(--blue);color:#06141d;transition:transform .05s;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.act:active{transform:scale(.985)}
+.act:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.act.wait{background:var(--panel);color:var(--muted);border:1px solid var(--line);cursor:default}
+.act.go{background:var(--red);color:#1a0d08;animation:pulse .6s ease-in-out infinite alternate}
+@keyframes pulse{to{box-shadow:0 0 0 8px #ff6a3d33}}
+
+/* result */
+.result{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px clamp(16px,4vw,28px);display:flex;flex-direction:column;gap:18px}
+.res-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 24px}
+.res-top .lab{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.res-top .big{font-size:clamp(54px,14vw,92px);font-weight:800;letter-spacing:-.03em;line-height:.95;font-variant-numeric:tabular-nums}
+.res-top .big small{font-size:.38em;font-weight:700;letter-spacing:0;margin-left:4px;color:var(--muted)}
+.verdict{font-size:clamp(17px,3.6vw,22px);font-weight:700;line-height:1.2}
+.verdict span{display:block;font-weight:400;color:var(--muted);font-size:15px;margin-top:4px;line-height:1.4}
+.strip{position:relative;margin:80px 4px 80px;height:16px}
+.track{position:absolute;inset:0;border-radius:8px;background:linear-gradient(90deg,var(--green) 0 var(--lim),var(--red) var(--lim) 100%);opacity:.85}
+.mk{position:absolute;top:0;transform:translateX(-50%);width:2px;height:16px;background:var(--ink)}
+.mk label{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:11.5px;font-weight:600;color:var(--ink);
+  line-height:1.2;text-align:center}
+.mk.up label{bottom:calc(100% + 6px)} .mk.up2 label{bottom:calc(100% + 30px)}
+.mk.dn label{top:calc(100% + 6px)} .mk.dn2 label{top:calc(100% + 30px)}
+.mk label small{display:block;color:var(--muted);font-weight:500;font-size:10.5px}
+.mk::after{content:"";position:absolute;left:50%;width:1px;background:var(--muted);transform:translateX(-50%)}
+.mk.up2::after{bottom:100%;height:24px} .mk.dn2::after{top:100%;height:24px}
+.mk.me{width:4px;height:24px;top:-4px;border-radius:2px;background:#fff;box-shadow:0 0 0 3px #0e1316}
+.mk.dashed{background:none;border-left:2px dashed var(--muted);width:0}
+.mk.l label{left:0;transform:none;text-align:left}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.cmp{grid-template-columns:1fr}}
+.cmp div{background:#0e1316;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--muted)}
+.cmp b{display:block;color:var(--ink);font-size:17px;margin-bottom:2px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{all:unset;cursor:pointer;box-sizing:border-box;padding:12px 18px;border-radius:10px;border:1px solid var(--line);font-weight:600;font-size:15px;
+  color:var(--ink);background:#0e1316}
+.btn:hover{border-color:var(--blue)}
+.btn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.btn.pri{background:var(--blue);color:#06141d;border-color:var(--blue)}
+.tiny{font-size:13px;color:var(--muted)}
+.stats{font-size:13px;color:var(--muted)}
+
+.why{display:flex;flex-direction:column;gap:14px;padding:4px 2px}
+.why h2{margin:0;font-size:22px;letter-spacing:-.01em}
+.why p{margin:0;color:var(--muted)}
+.why p b{color:var(--ink);font-weight:600}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+footer{color:var(--muted);font-size:12.5px;line-height:1.5;border-top:1px solid var(--line);padding-top:14px}
+[hidden]{display:none!important}
+@media (min-width:980px){
+  .app{max-width:1100px;display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);column-gap:36px;row-gap:18px;align-items:start;
+    grid-template-areas:"stage head" "stage act" "stage result" "why why" "foot foot"}
+  .app>header{grid-area:head;padding-top:8px} .stage{grid-area:stage} .act{grid-area:act} .result{grid-area:result}
+  .why{grid-area:why;max-width:760px} footer{grid-area:foot}
+}
+@media (prefers-reduced-motion:reduce){.fault,.act.go{animation:none}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div class="eyebrow">Open safety study · interactive</div>
+    <h1>Could you save <em>the Roadster?</em></h1>
+    <p class="lede">A thruster valve sticks open in mid-air. <b>You are the fault reaction time.</b> Isolate the failed line before the car is lost, and compare yourself with the safety computer.</p>
+  </header>
+
+  <section class="stage" id="stage" aria-label="Hop simulation">
+    <div class="hud">
+      <span class="chip" id="state">Ready</span>
+      <div class="timer" id="timer" hidden><small>Fault reaction time</small><b id="ms">0 ms</b><div class="bar"><i id="barfill"></i></div></div>
+    </div>
+    <canvas id="cv" width="900" height="859"></canvas>
+    <div class="fault" id="fault" hidden>Valve stuck open</div>
+    <div class="outcome" id="outcome" hidden><b id="o1"></b><span id="o2"></span></div>
+    <div class="overlay" id="intro">
+      <h2>Test your fault reaction time</h2>
+      <p>The Roadster hops on compressed air. Mid-roll, one valve fails.</p>
+      <ol>
+        <li><b>Press start.</b> The car hops. Do not click early.</li>
+        <li><b>The moment you see the fault, tap.</b> That isolates the failed line.</li>
+        <li><b>The car has about 200 ms.</b> The safety computer needs 20.</li>
+      </ol>
+    </div>
+  </section>
+
+  <button class="act" id="act" type="button">Start the hop</button>
+
+  <section class="result" id="result" hidden aria-live="polite">
+    <div class="res-top">
+      <div><div class="lab">Your fault reaction time</div><div class="big" id="r-ms">0<small>ms</small></div></div>
+      <div class="verdict" id="r-verdict"></div>
+    </div>
+    <div class="strip" id="strip"></div>
+    <div class="cmp">
+      <div><b id="c-you-h"></b><span id="c-you"></span></div>
+      <div><b>Safety computer: 20 ms</b><span id="c-mon"></span></div>
+    </div>
+    <div class="btns">
+      <button class="btn pri" id="again" type="button">Try again</button>
+      <button class="btn" id="watch" type="button">Watch the safety computer</button>
+      <button class="btn" id="save" type="button">Save result image</button>
+      <button class="btn" id="copy" type="button">Copy text to share</button>
+    </div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section class="why">
+    <h2>What you just measured</h2>
+    <p><b>Fault tolerant time interval (FTTI).</b> In ISO 26262 this is the time from a fault until a hazard occurs if nothing reacts. Fault detection plus fault reaction has to fit inside it.</p>
+    <p><b>This system's FTTI is about 200 ms.</b> In the study's reference hop, with the fault in the inverted part of the roll, the car lands within limits if the failed line is isolated within 180 to 200 ms. At 200 to 220 ms it lands harder than the 5 m/s limit. Later, it tips over.</p>
+    <p><b>Why this matters for the design.</b> A person cannot be the safety mechanism. A typical reaction to a visual cue is about 250 ms, before any decision. So the study requires detection and isolation in 20 ms (TSR-09), done by a monitor on separate hardware, and it checks the whole chain.</p>
+    <p><b>Textbook safe states can be wrong.</b> Cutting all gas, the usual reaction, lands this car on its roof. The animated fault viewer shows both side by side.</p>
+    <div class="cta">
+      <a class="btn pri" href="https://github.com/Lalithprabu/TESLA-Roadster-thrust-safety">Read the study and rerun the code</a>
+      <a class="btn" href="index.html">Open the fault viewer</a>
+      <a class="btn" href="../docs/RTS-SSC-001.pdf">47-page PDF</a>
+    </div>
+  </section>
+
+  <footer>
+    Independent educational study by Lalith Prabu. Not affiliated with, endorsed or reviewed by Tesla or SpaceX; Tesla's design is not public and every number here is an assumption (Appendix A of the study). Outcomes come from the study's hop simulator (Sim 3): one stuck-open valve, isolate-and-recover strategy, fault moment chosen at random from 1.45 to 1.70 s. Your time includes your screen and device latency, usually tens of milliseconds, so treat it as indicative. Nothing is sent anywhere; your best time is kept only in this browser.
+  </footer>
+</main>
+
+<script>
+"use strict";
+const DATA = __DATA__;
+const THEME = {sky:"#10181c", ground:"#2a3338", groundLine:"#3d484e", body:"#dfe4e6", wheel:"#20272b", glass:"#5d6b73",
+  jet:"#7cc4ff", red:"#ff6a3d", green:"#2fd39a", muted:"#9aa4a8", ink:"#f3f1ec", bg:"#0e1316"};
+const XMIN = -7.2, XMAX = 1.6, ZMIN = -0.8, ZMAX = 7.6, CG_H = 0.55, HUMAN_MS = 250, MONITOR_MS = 20;
+const BODY = [[-1.0,-0.40],[1.0,-0.40],[1.0,0.30],[0.62,0.42],[0.42,0.78],[-0.42,0.78],[-0.62,0.42],[-1.0,0.30]];
+const WHEELS = [[-0.98,-0.62,0.30,0.34],[0.68,-0.62,0.30,0.34]];
+const WIN = [[-0.34,0.46],[0.34,0.46],[0.30,0.70],[-0.30,0.70]];
+const GRID_MS = DATA.grid.map(g => Math.round(g * 1000));
+const REDUCED = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const $ = id => document.getElementById(id);
+const cv = $("cv"), ctx = cv.getContext("2d");
+const el = {state:$("state"), timer:$("timer"), ms:$("ms"), bar:$("barfill"), fault:$("fault"), outcome:$("outcome"),
+  o1:$("o1"), o2:$("o2"), intro:$("intro"), act:$("act"), result:$("result")};
+
+// ---- storage (best time) --------------------------------------------------------------
+const KEY = "rts_reaction_v1";
+function loadStats(){ try { return JSON.parse(localStorage.getItem(KEY)) || {best:null, n:0}; } catch (e) { return {best:null, n:0}; } }
+function saveStats(s){ try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+
+// ---- geometry -------------------------------------------------------------------------
+function lerpFrame(frames, t){
+  if (t <= frames[0][0]) return frames[0];
+  const last = frames[frames.length - 1];
+  if (t >= last[0]) return last;
+  let lo = 0, hi = frames.length - 1;
+  while (hi - lo > 1){ const m = (lo + hi) >> 1; if (frames[m][0] <= t) lo = m; else hi = m; }
+  const a = frames[lo], b = frames[hi], k = (t - a[0]) / (b[0] - a[0]);
+  return a.map((v, i) => v + (b[i] - v) * k);
+}
+const rot = (p, phi) => { const c = Math.cos(phi), s = Math.sin(phi); return [p[0]*c - p[1]*s, p[0]*s + p[1]*c]; };
+
+function drawWorld(g, x0, y0, W, H, o){
+  // o: {frame, landed, stuck, trail, shake}
+  const s = Math.min(W / (XMAX - XMIN), H / (ZMAX - ZMIN));
+  const ox = x0 + (W - s * (XMAX - XMIN)) / 2, oy = y0 + (H - s * (ZMAX - ZMIN)) / 2;
+  const P = (x, z) => [ox + (x - XMIN) * s, oy + (ZMAX - z) * s];
+  g.save();
+  g.beginPath(); g.rect(x0, y0, W, H); g.clip();
+  if (o.shake) g.translate(o.shake[0], o.shake[1]);
+  g.fillStyle = THEME.sky; g.fillRect(x0 - 20, y0 - 20, W + 40, H + 40);
+  const gy = P(0, 0)[1];
+  g.fillStyle = THEME.ground; g.fillRect(x0 - 20, gy, W + 40, H);
+  g.strokeStyle = THEME.groundLine; g.lineWidth = 1.5; g.beginPath(); g.moveTo(x0 - 20, gy); g.lineTo(x0 + W + 20, gy); g.stroke();
+  // 1 m ground ticks
+  g.fillStyle = THEME.groundLine;
+  for (let m = Math.ceil(XMIN); m <= XMAX; m++){ const p = P(m, 0); g.fillRect(p[0] - 1, gy, 2, 7); }
+  // trail
+  if (o.trail && o.trail.length > 1){
+    g.strokeStyle = "#9aa4a8"; g.globalAlpha = .55; g.lineWidth = 1.4; g.setLineDash([4, 5]); g.beginPath();
+    o.trail.forEach((q, i) => { const p = P(q[0], q[1]); i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); });
+    g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+  }
+  const f = o.frame, y = f[1], phi = f[3];
+  let z = f[2] + CG_H;
+  const body = BODY.map(p => rot(p, phi));
+  const wheels = WHEELS.map(([x, yy, w, h]) => [[x,yy],[x+w,yy],[x+w,yy+h],[x,yy+h]].map(p => rot(p, phi)));
+  let low = Math.min(...body.map(p => p[1]), ...wheels.flat().map(p => p[1]));
+  if (o.landed && z + low < 0) z = -low;                       // rest on the ground after touchdown
+  const poly = (pts, fill) => { g.beginPath(); pts.forEach((p, i) => { const q = P(y + p[0], z + p[1]); i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }); g.closePath(); g.fillStyle = fill; g.fill(); };
+  // jets
+  if (!o.landed){
+    DATA.liftD.forEach((xd, i) => {
+      const F = f[4 + i]; if (F <= 0.05) return;
+      const a = rot([xd, -0.40], phi), b = rot([xd, -0.40 - 0.16 * F], phi);
+      const pa = P(y + a[0], z + a[1]), pb = P(y + b[0], z + b[1]);
+      const bad = i === 3 && o.stuck;
+      g.lineCap = "round";
+      g.strokeStyle = bad ? THEME.red : THEME.jet; g.globalAlpha = .28; g.lineWidth = s * 0.30;
+      g.beginPath(); g.moveTo(pa[0], pa[1]); g.lineTo(pb[0], pb[1]); g.stroke();
+      g.globalAlpha = .9; g.lineWidth = s * 0.13;
+      g.beginPath(); g.moveTo(pa[0], pa[1]); g.lineTo(pb[0], pb[1]); g.stroke(); g.globalAlpha = 1;
+    });
+  }
+  poly(body, THEME.body);
+  g.strokeStyle = "#fff"; g.lineWidth = 1.2; g.stroke();
+  wheels.forEach(w => poly(w, THEME.wheel));
+  poly(WIN.map(p => rot(p, phi)), THEME.glass);
+  if (o.stuck && !o.landed){                                   // stuck-open marker on the right outer nozzle
+    const a = rot([DATA.liftD[3], -0.40], phi), q = P(y + a[0], z + a[1]);
+    g.strokeStyle = THEME.red; g.lineWidth = 2; g.beginPath(); g.arc(q[0], q[1], s * 0.2, 0, 6.283); g.stroke();
+  }
+  g.restore();
+}
+
+// ---- game state -----------------------------------------------------------------------
+let state = "idle";            // idle | armed | fly | replay | done
+let kase = null, run = null, clicked = false;
+let t0 = 0, armedUntil = 0, onset = null, faultOn = false, landedAt = null, trail = [], lastFrame = null, result = null;
+let stats = loadStats();
+
+function setState(s){ state = s; }
+function pickCase(){ return DATA.cases[Math.floor(Math.random() * DATA.cases.length)]; }
+function show(node, on){ node.hidden = !on; }
+
+function actUI(kind){
+  const a = el.act; a.className = "act" + (kind === "wait" || kind === "armed" ? " wait" : kind === "go" ? " go" : "");
+  a.disabled = false;
+  a.textContent = ({start:"Start the hop", armed:"Stand by…", wait:"Waiting for a fault… do not tap yet", go:"Isolate the faulty line now", hide:""})[kind] || "";
+  a.style.display = kind === "hide" ? "none" : "";
+}
+
+function resetVisuals(){
+  show(el.fault, false); show(el.outcome, false); show(el.timer, false);
+  el.bar.style.width = "0"; el.bar.style.background = THEME.green; el.ms.textContent = "0 ms";
+  trail = []; onset = null; faultOn = false; landedAt = null; clicked = false; lastFrame = null;
+}
+
+function start(){
+  resetVisuals(); show(el.result, false); show(el.intro, false);
+  kase = pickCase(); run = kase.never; result = null;
+  setState("armed"); el.state.textContent = "Stand by"; actUI("armed");
+  armedUntil = performance.now() + 1100 + Math.random() * 1700;
+}
+
+function message(title, text, btn){
+  show(el.intro, true);
+  el.intro.innerHTML = "<h2></h2><p></p>";
+  el.intro.firstChild.textContent = title; el.intro.lastChild.textContent = text;
+  setState("idle"); el.state.textContent = "Ready"; actUI("start"); if (btn) el.act.textContent = btn;
+}
+
+function abortIfHidden(){
+  if (document.hidden && (state === "fly" || state === "armed" || state === "replay")){
+    resetVisuals(); message("Paused", "The tab lost focus, so that run was cancelled.", "Try again");
+  }
+}
+document.addEventListener("visibilitychange", abortIfHidden);
+
+function react(ev){
+  if (state !== "fly" || clicked) return;
+  if (!faultOn){ resetVisuals(); message("Too early", "You tapped before any fault. That is a guess, not a reaction.", "Try again"); return; }
+  const R = Math.max(0, (ev && ev.timeStamp ? ev.timeStamp : performance.now()) - onset);
+  if (R < 100){ resetVisuals(); message("Too fast to be real", `${Math.round(R)} ms is faster than a person can react. That was anticipation. Try again.`, "Try again"); return; }
+  clicked = true;
+  const ms = Math.round(R);
+  let pick = null;
+  for (let i = 0; i < GRID_MS.length; i++){ if (GRID_MS[i] >= ms){ pick = kase.runs[i]; break; } }
+  run = pick || kase.never;
+  result = {ms, kase, run, late: !pick};
+  el.ms.textContent = ms + " ms"; fillBar(ms, kase.limitMs);
+  actUI("hide"); el.state.textContent = "Isolating";
+}
+
+function fillBar(ms, limit){
+  const pct = Math.min(100, ms / limit * 100);
+  el.bar.style.width = pct + "%"; el.bar.style.background = ms > limit ? THEME.red : THEME.green;
+}
+
+function playMachine(){
+  resetVisuals(); show(el.result, false);
+  kase = result ? result.kase : kase; run = kase.runs[0]; clicked = true;
+  setState("replay"); el.state.textContent = "Safety computer"; t0 = null;
+  window.scrollTo({top: 0, behavior: REDUCED ? "auto" : "smooth"});
+}
+
+// ---- main loop ------------------------------------------------------------------------
+function resize(){
+  const r = cv.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.round(r.width * d), h = Math.round(r.height * d);
+  if (cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
+}
+window.addEventListener("resize", resize);
+
+function groundFrame(){ return [0, 0, 0, 0, 0, 0, 0, 0]; }
+
+function loop(ts){
+  resize();
+  const W = cv.width, H = cv.height;
+  let frame = lastFrame || groundFrame(), landed = false, stuck = false, shake = null;
+
+  if (state === "armed"){
+    frame = groundFrame();
+    if (performance.now() >= armedUntil){ setState("fly"); t0 = ts; el.state.textContent = "Hop in progress"; actUI("wait"); }
+  }
+  if (state === "fly" || state === "replay"){
+    if (t0 === null) t0 = ts;
+    const t = (ts - t0) / 1000;
+    const frames = (state === "fly" && !clicked) ? kase.never.frames : run.frames;
+    const endT = frames[frames.length - 1][0];
+    frame = lerpFrame(frames, Math.min(t, endT));
+    if (!faultOn && t >= kase.faultT){
+      faultOn = true; onset = ts;
+      show(el.fault, true); show(el.timer, true);
+      if (state === "fly"){ actUI("go"); el.state.textContent = "Fault"; }
+      else { el.ms.textContent = Math.round(run.d * 1000) + " ms"; fillBar(run.d * 1000, kase.limitMs); }
+    }
+    if (faultOn && state === "fly" && !clicked){
+      const R = ts - onset; el.ms.textContent = Math.round(R) + " ms"; fillBar(R, kase.limitMs);
+    }
+    stuck = faultOn && frame[7] > 0.05;
+    trail.push([frame[1], frame[2] + CG_H]);
+    if (t >= endT){
+      landed = true;
+      if (landedAt === null){ landedAt = ts; onLanded(); }
+      const age = (ts - landedAt) / 1000;
+      if (!REDUCED && age < 0.45){
+        const amp = Math.min(1, run.vz / 12) * 9 * (1 - age / 0.45) * (cv.width / 900);
+        shake = [(Math.random() - .5) * amp * 2, (Math.random() - .5) * amp * 2];
+      }
+      if (age > 0.8 && state === "fly") finish();
+      if (age > 1.2 && state === "replay") finishReplay();
+    }
+  } else if (state === "done" || state === "idle"){
+    landed = state === "done"; stuck = false;
+  }
+  lastFrame = frame;
+  drawWorld(ctx, 0, 0, W, H, {frame, landed, stuck, trail, shake});
+  requestAnimationFrame(loop);
+}
+
+function describe(run){
+  const roll = Math.abs(run.roll);
+  if (run.outcome === "safe") return {word:"UPRIGHT LANDING", cls:"good", sub:`${run.vz.toFixed(1)} m/s, within limits`};
+  if (run.outcome === "hard") return {word:"HARD LANDING", cls:"mid", sub:`${run.vz.toFixed(1)} m/s, above the 5 m/s limit`};
+  return {word:"CAR LOST", cls:"bad", sub:`${run.vz.toFixed(1)} m/s, rolled ${Math.round(roll)}°`};
+}
+
+function onLanded(){
+  const d = describe(run);
+  show(el.fault, false);
+  el.o1.className = d.cls; el.o1.textContent = d.word; el.o2.textContent = d.sub; show(el.outcome, true);
+}
+
+// ---- result ---------------------------------------------------------------------------
+function finish(){
+  setState("done"); el.state.textContent = "Result"; actUI("hide");
+  const r = result || {ms:null, kase, run: kase.never, late: true};
+  const ms = r.ms, limit = r.kase.limitMs;
+  const saved = ms !== null && ms <= limit && !r.late;
+  stats.n += 1;
+  if (ms !== null && (stats.best === null || ms < stats.best)) stats.best = ms;
+  saveStats(stats);
+
+  $("r-ms").innerHTML = (ms === null ? "—" : ms) + "<small>ms</small>";
+  const v = $("r-verdict"); let head, sub, cls;
+  if (ms === null){ head = "No reaction."; sub = "The car hit the ground 1.2 s after the fault."; cls = "bad"; }
+  else if (saved){ head = `Saved. ${limit - ms} ms to spare.`; sub = `Isolated inside the ${limit} ms limit for this fault moment. An upright landing in the simulation.`; cls = "good"; }
+  else if (r.late){ head = "Too late."; sub = `The car was already out of control. The limit was ${limit} ms.`; cls = "bad"; }
+  else { head = `${ms - limit} ms too slow.`; sub = `The limit for this fault moment was ${limit} ms. Result: ${describe(r.run).word.toLowerCase()}, ${r.run.vz.toFixed(1)} m/s.`; cls = r.run.outcome === "hard" ? "mid" : "bad"; }
+  v.innerHTML = ""; const h = document.createElement("div"); h.className = cls; h.textContent = head; v.appendChild(h);
+  const s = document.createElement("span"); s.textContent = sub; v.appendChild(s);
+
+  // strip
+  const strip = $("strip"), lim = Math.min(100, limit / 5);
+  strip.style.setProperty("--lim", lim + "%");
+  strip.innerHTML = '<div class="track"></div>';
+  const mk = (ms, cls, label, small) => { const d = document.createElement("div"); d.className = "mk " + cls; d.style.left = Math.min(100, ms / 5) + "%";
+    d.innerHTML = `<label>${label}${small ? `<small>${small}</small>` : ""}</label>`; strip.appendChild(d); };
+  mk(MONITOR_MS, "up2 l", "Safety computer", "20 ms");
+  mk(limit, "up", "Limit", `${limit} ms`);
+  mk(HUMAN_MS, "dn2 dashed", "Typical human", "about 250 ms");
+  if (ms !== null) mk(Math.min(ms, 500), "me dn", `You: ${ms} ms`, "");
+  $("c-you-h").textContent = ms === null ? "You: no reaction" : `You: ${ms} ms`;
+  $("c-you").textContent = describe(r.run).word.charAt(0) + describe(r.run).word.slice(1).toLowerCase() + ` · ${r.run.vz.toFixed(1)} m/s, rolled ${Math.round(Math.abs(r.run.roll))}°`;
+  const m = r.kase.runs[0];
+  $("c-mon").textContent = `Upright landing · ${m.vz.toFixed(1)} m/s, rolled ${Math.round(Math.abs(m.roll))}°`;
+  $("stats").textContent = stats.best !== null ? `Scale 0 to 500 ms · your best on this device: ${stats.best} ms · attempts: ${stats.n}` : `Scale 0 to 500 ms · attempts on this device: ${stats.n}`;
+  r.saved = saved; r.finalFrame = lastFrame; r.trail = trail.slice(); result = r;
+  show(el.result, true);
+  actUI("hide");
+  setTimeout(() => $("result").scrollIntoView({behavior: REDUCED ? "auto" : "smooth", block: "nearest"}), 200);
+}
+
+function finishReplay(){
+  setState("done"); el.state.textContent = "Result"; actUI("hide"); show(el.result, true);
+  $("result").scrollIntoView({behavior: REDUCED ? "auto" : "smooth", block: "nearest"});
+}
+
+// ---- share ----------------------------------------------------------------------------
+function shareText(){
+  const r = result, url = location.href.split("#")[0];
+  if (!r || r.ms === null) return `I did not react in time and lost a hopping Roadster. The safety computer needs 20 ms. Could you save it? ${url}`;
+  const lim = r.kase.limitMs;
+  return r.saved
+    ? `I saved a hopping Roadster after a stuck thruster valve: my fault reaction time was ${r.ms} ms against a ${lim} ms limit. The safety computer needs 20 ms. Can you beat it? ${url}`
+    : `My fault reaction time was ${r.ms} ms. The Roadster needed ${lim} ms or less, so I lost the car. The safety computer needs 20 ms. Could you save it? ${url}`;
+}
+
+function drawCard(){
+  const c = document.createElement("canvas"); c.width = 1200; c.height = 630; const g = c.getContext("2d");
+  const r = result, font = "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+  g.fillStyle = THEME.bg; g.fillRect(0, 0, 1200, 630);
+  // scene panel
+  const px = 640, py = 40, pw = 520, ph = Math.round(520 * 8.4 / 8.8);
+  g.save(); g.beginPath(); g.roundRect ? g.roundRect(px, py, pw, ph, 18) : g.rect(px, py, pw, ph); g.clip();
+  drawWorld(g, px, py, pw, ph, {frame: r.finalFrame, landed: true, stuck: false, trail: r.trail});
+  g.restore();
+  const d = describe(r.run);
+  g.textBaseline = "alphabetic";
+  g.fillStyle = "#7cc4ff"; g.font = `600 22px ${font}`; g.fillText("OPEN SAFETY STUDY · INTERACTIVE", 60, 86);
+  g.fillStyle = THEME.ink; g.font = `800 52px ${font}`; g.fillText("Could you save", 60, 158); g.fillText("the Roadster?", 60, 216);
+  g.fillStyle = THEME.muted; g.font = `500 24px ${font}`; g.fillText("My fault reaction time", 60, 290);
+  g.fillStyle = r.saved ? THEME.green : THEME.red; g.font = `800 120px ${font}`;
+  g.fillText(r.ms === null ? "No reaction" : r.ms + " ms", 56, 400);
+  g.fillStyle = THEME.ink; g.font = `600 28px ${font}`;
+  const line = r.ms === null ? "The car hit the ground." : (r.saved ? `Saved: inside the ${r.kase.limitMs} ms limit.` : `${d.word.charAt(0) + d.word.slice(1).toLowerCase()}: limit was ${r.kase.limitMs} ms.`);
+  g.fillText(line, 60, 450);
+  g.fillStyle = THEME.muted; g.font = `500 20px ${font}`;
+  g.fillText("Safety computer 20 ms · typical human about 250 ms", 60, 490);
+  // scale bar
+  const bx = 60, bw = 520, by = 518, lim = Math.min(1, r.kase.limitMs / 500);
+  g.fillStyle = THEME.green; g.fillRect(bx, by, bw * lim, 12); g.fillStyle = THEME.red; g.fillRect(bx + bw * lim, by, bw * (1 - lim), 12);
+  if (r.ms !== null){ g.fillStyle = "#fff"; g.fillRect(bx + bw * Math.min(1, r.ms / 500) - 3, by - 8, 6, 28); }
+  g.fillStyle = THEME.muted; g.font = `500 18px ${font}`; g.fillText("0", bx, by + 40); g.fillText("500 ms", bx + bw - 62, by + 40);
+  g.font = `500 19px ${font}`; g.fillText("Independent study, not Tesla data. github.com/Lalithprabu/TESLA-Roadster-thrust-safety", 60, 606);
+  return c;
+}
+
+async function saveImage(){
+  if (!result) return;
+  try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+  const c = drawCard();
+  c.toBlob(async blob => {
+    const file = new File([blob], "roadster-reaction-time.png", {type: "image/png"});
+    try { if (navigator.canShare && navigator.canShare({files: [file]})){ await navigator.share({files: [file], text: shareText()}); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "roadster-reaction-time.png";
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }, "image/png");
+}
+
+async function copyText(btn){
+  const t = shareText(); let ok = false;
+  try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {
+    const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand("copy"); } catch (e2) {} ta.remove();
+  }
+  const old = btn.textContent; btn.textContent = ok ? "Copied" : "Copy failed"; setTimeout(() => btn.textContent = old, 1600);
+}
+
+// ---- input ----------------------------------------------------------------------------
+el.act.addEventListener("pointerdown", ev => { if (state === "fly") { ev.preventDefault(); react(ev); } });
+el.act.addEventListener("click", () => { if (state === "idle") start(); });
+$("stage").addEventListener("pointerdown", ev => { if (state === "fly") { ev.preventDefault(); react(ev); } });
+document.addEventListener("keydown", ev => {
+  if ((ev.code === "Space" || ev.code === "Enter") && state === "fly"){ ev.preventDefault(); react(ev); }
+});
+$("again").addEventListener("click", () => { window.scrollTo({top: 0, behavior: REDUCED ? "auto" : "smooth"}); start(); });
+$("watch").addEventListener("click", playMachine);
+$("save").addEventListener("click", saveImage);
+$("copy").addEventListener("click", ev => copyText(ev.currentTarget));
+
+kase = DATA.cases[0]; run = kase.never;
+actUI("start");
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
